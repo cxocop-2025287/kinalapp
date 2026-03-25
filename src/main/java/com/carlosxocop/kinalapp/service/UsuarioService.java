@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UsuarioService implements IUsuarioService{
+public class UsuarioService implements IUsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
@@ -27,10 +27,11 @@ public class UsuarioService implements IUsuarioService{
     @Override
     public Usuario guardar(Usuario usuario) {
         validarUsuario(usuario);
-        if (usuario.getEstado()==0) {
+        if (usuario.getEstado() == 0) {
             usuario.setEstado(1);
         }
-        return usuarioRepository.save(usuario);    }
+        return usuarioRepository.save(usuario);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -51,15 +52,15 @@ public class UsuarioService implements IUsuarioService{
 
     @Override
     public void eliminar(String codigo) {
-        if(!usuarioRepository.existsById(codigo)){
-            throw new IllegalArgumentException("No existe ningun usuario con el codigo: "+ codigo);
+        if (!usuarioRepository.existsById(codigo)) {
+            throw new IllegalArgumentException("No existe ningun usuario con el codigo: " + codigo);
 
         }
         usuarioRepository.deleteById(codigo);
     }
 
     @Override
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public boolean existePorCodigo(String codigo) {
         return usuarioRepository.existsById(codigo);
     }
@@ -70,9 +71,9 @@ public class UsuarioService implements IUsuarioService{
         return usuarioRepository.findByEstado(estado);
     }
 
-    private void validarUsuario(Usuario usuario){
+    private void validarUsuario(Usuario usuario) {
 
-        if (usuario.getCodigo_usuario() == null || usuario.getCodigo_usuario().trim().isEmpty()){
+        if (usuario.getCodigo_usuario() == null || usuario.getCodigo_usuario().trim().isEmpty()) {
             throw new IllegalArgumentException("El codigo del usuario es un dato obligatorio.");
         }
         if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
@@ -81,10 +82,10 @@ public class UsuarioService implements IUsuarioService{
         if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("La contraseña del usuario es obligtorio.");
         }
-        if(usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
+        if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("El email del usuario es obligatorio.");
         }
-        if(usuario.getRol() == null || usuario.getRol().trim().isEmpty()) {
+        if (usuario.getRol() == null || usuario.getRol().trim().isEmpty()) {
             throw new IllegalArgumentException("El rol del usuario es obligatorio.");
         }
 
