@@ -70,7 +70,6 @@ public class Usuario {
 
     public String getRol() {
         return rol;
-        return rol;
     }
 
     public void setRol(String rol) {
