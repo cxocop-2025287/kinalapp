@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface IUsuarioService {
     List<Usuario> listarTodos();
 
-    Usuario guardar (Usuario usuario);
+    Usuario guardar(Usuario usuario);
 
     Optional<Usuario> buscarPorCodigo(String codigo);
 
