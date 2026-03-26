@@ -10,9 +10,10 @@ import java.util.List;
 public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> findByEstado(int estado);
 
-    List<Venta> findByUsuarioCodigo_usuario(String codigo_usuario);
+    @Query("SELECT v FROM Venta v WHERE v.usuario.codigo_usuario = :codigo_usuario")
+    List<Venta> findByUsuarioCodigo(@Param("codigo_usuario") String codigo);
 
-    List<Venta> findByClienteCodigo_cliente(String codigo_cliente);
-
+    @Query("SELECT v FROM Venta v WHERE v.cliente.dpi_Cliente = :dpi_cliente")
+    List<Venta> findByClienteDpi(@Param("dpi_cliente") String dpi);
 
 }
