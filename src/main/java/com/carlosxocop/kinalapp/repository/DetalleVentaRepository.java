@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long> {
 
+    @Query("SELECT d FROM DetalleVenta d WHERE d.venta.codigo_venta = :codigoVenta")
+    List<DetalleVenta> findByVentaCodigoVenta(@Param("codigoVenta") Long codigoVenta);
+
     @Query("SELECT d FROM DetalleVenta d WHERE d.venta.codigo_venta = :codigo_venta")
     List<DetalleVenta> findByVentaCodigo(@Param("codigo_venta") Long codigo);
 
