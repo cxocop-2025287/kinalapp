@@ -52,11 +52,10 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public void eliminar(String codigo) {
-        if (!usuarioRepository.existsById(codigo)) {
-            throw new IllegalArgumentException("No existe ningun usuario con el codigo: " + codigo);
+        Usuario usuario = usuarioRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun usuario con el codigo:  " + codigo));
 
-        }
-        usuarioRepository.deleteById(codigo);
+        usuario.setEstado(0);
+        usuarioRepository.save(usuario);
     }
 
     @Override
