@@ -23,12 +23,12 @@ public class Venta {
     @Column(precision = 10, scale = 2)
     private BigDecimal total;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuarios_codigo_usuario")
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clientes_codigo_cliente")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "clientes_dpi_cliente")
     private Cliente cliente;
 
     public Venta() {

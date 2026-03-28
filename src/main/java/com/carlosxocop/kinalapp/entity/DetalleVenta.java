@@ -18,11 +18,11 @@ public class DetalleVenta {
     @Column(nullable = false)
     private double subtotal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "productos_codigo_producto", nullable = false)
     private Producto producto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ventas_codigo_venta", nullable = false)
     private Venta venta;
 

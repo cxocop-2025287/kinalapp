@@ -35,24 +35,21 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     public DetalleVenta guardar(DetalleVenta detalleVenta) {
         Producto producto = productoRepository.findById(detalleVenta.getProducto().getCodigo_producto()).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
         detalleVenta.setPrecio(producto.getPrecio());
         detalleVenta.setSubtotal(detalleVenta.getCantidad() *detalleVenta.getPrecio());
 
         DetalleVenta guardado = detalleVentaRepository.save(detalleVenta);
-        Venta venta = guardado.getVenta();
+        Long codigo_venta = guardado.getVenta().getCodigo_venta();
 
         double total = 0;
 
-        List<DetalleVenta> detalleVentas = detalleVentaRepository
-                .findByVentaCodigoVenta(venta.getCodigo_venta());
+        List<DetalleVenta> detalleVentas = detalleVentaRepository.findByVentaCodigoVenta(codigo_venta);
 
         for (int i = 0; i < detalleVentas.size(); i++) {
             total =total+ detalleVentas.get(i).getSubtotal();
         }
 
-        venta.setTotal(BigDecimal.valueOf(total));
-        ventaRepository.save(venta);
+        ventaRepository.actualizarTotal(codigo_venta, BigDecimal.valueOf(total));
 
         return guardado;
 
@@ -66,32 +63,41 @@ public class DetalleVentaService implements IDetalleVentaService{
 
     @Override
     public DetalleVenta actualizar(Long codigo, DetalleVenta detalleVenta) {
-        if (!detalleVentaRepository.existsById(codigo)) {
-            throw new RuntimeException("DetalleVenta no encontrado con codigo " + codigo);
-        }
-        detalleVenta.setCodigo_detalle(codigo);
         Producto producto = productoRepository.findById(detalleVenta.getProducto().getCodigo_producto()).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
+        detalleVenta.setCodigo_detalle(codigo);
         detalleVenta.setPrecio(producto.getPrecio());
         detalleVenta.setSubtotal(detalleVenta.getCantidad()*detalleVenta.getPrecio());
 
-        return detalleVentaRepository.save(detalleVenta);
+        DetalleVenta guardado =  detalleVentaRepository.save(detalleVenta);
+        Long codigo_venta = guardado.getVenta().getCodigo_venta();
+
+        double total=0;
+
+        List<DetalleVenta> detalleVentas = detalleVentaRepository.findByVentaCodigoVenta(codigo_venta);
+
+        for (int i = 0; i < detalleVentas.size(); i++) {
+            total =total+ detalleVentas.get(i).getSubtotal();
+        }
+
+        ventaRepository.actualizarTotal(codigo_venta, BigDecimal.valueOf(total));
+
+        return guardado;
     }
 
     @Override
     public void eliminar(Long codigo) {
         DetalleVenta detalleVenta = detalleVentaRepository.findById(codigo).orElseThrow(()->new RuntimeException("DetalleVenta no encontrado"));
-        Venta venta = detalleVenta.getVenta();
+        Long codigo_venta = detalleVenta.getVenta().getCodigo_venta();
 
         detalleVentaRepository.deleteById(codigo);
         double total = 0;
-        List<DetalleVenta> detalles = detalleVentaRepository.findByVentaCodigoVenta(venta.getCodigo_venta());
+        List<DetalleVenta> detalles = detalleVentaRepository.findByVentaCodigoVenta(codigo_venta);
         for (int i = 0; i < detalles.size(); i++) {
             total = total + detalles.get(i).getSubtotal();
         }
 
-        venta.setTotal(BigDecimal.valueOf(total));
-        ventaRepository.save(venta);
+        ventaRepository.actualizarTotal(codigo_venta, BigDecimal.valueOf(total));
     }
 
     @Override
