@@ -56,11 +56,10 @@ public class VentaService implements IVentaService {
 
     @Override
     public void eliminar(Long codigo) {
-        if (!ventaRepository.existsById(codigo)) {
-            throw new IllegalArgumentException("No existe ninguna venta con el codigo: " + codigo);
+        Venta venta = ventaRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun venta con el codigo:  " + codigo));
 
-        }
-        ventaRepository.deleteById(codigo);
+        venta.setEstado(0);
+        ventaRepository.save(venta);
     }
 
     @Override

@@ -52,11 +52,10 @@ public class ProductoService implements IProductoService{
 
     @Override
     public void eliminar(String codigo) {
-        if(!productoRepository.existsById(codigo)){
-            throw new IllegalArgumentException("No existe ningún producto con el código: "+ codigo);
+        Producto producto = productoRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun producto con el codigo:  " + codigo));
 
-        }
-        productoRepository.deleteById(codigo);
+        producto.setEstado(0);
+        productoRepository.save(producto);
     }
 
     @Override
