@@ -10,13 +10,13 @@ public interface IProductoService {
 
     Producto guardar (Producto producto);
 
-    Optional<Producto> buscarPorCodigo(String codigo);
+    Optional<Producto> buscarPorCodigo(Long codigo);
 
-    Producto actualizar(String codigo, Producto producto);
+    Producto actualizar(Long codigo, Producto producto);
 
-    void eliminar(String codigo);
+    void eliminar(Long codigo);
 
-    boolean existePorCodigo(String codigo);
+    boolean existePorCodigo(Long codigo);
 
     List<Producto> listarPorEstado(int estado);
 }

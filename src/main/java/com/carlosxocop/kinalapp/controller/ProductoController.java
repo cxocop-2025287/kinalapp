@@ -38,10 +38,10 @@ public class ProductoController {
     @DeleteMapping("/{codigo}")
     public ResponseEntity<Void> eliminar(@PathVariable String codigo){
         try{
-            if(!productoService.existePorCodigo(codigo)){
+            if(!productoService.existePorCodigo(Long.valueOf(codigo))){
                 return  ResponseEntity.notFound().build();
             }
-            productoService.eliminar(codigo);
+            productoService.eliminar(Long.valueOf(codigo));
             return ResponseEntity.noContent().build();
         }catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -51,11 +51,11 @@ public class ProductoController {
     @PutMapping("/{codigo}")
     public ResponseEntity<?> actualizar(@PathVariable String codigo, @RequestBody Producto producto){
         try {
-            if(!productoService.existePorCodigo(codigo)){
+            if(!productoService.existePorCodigo(Long.valueOf(codigo))){
                 return ResponseEntity.notFound().build();
 
             }
-            Producto productoActualizado = productoService.actualizar(codigo, producto);
+            Producto productoActualizado = productoService.actualizar(Long.valueOf(codigo), producto);
             return ResponseEntity.ok(productoActualizado);
 
         }catch(IllegalArgumentException e){

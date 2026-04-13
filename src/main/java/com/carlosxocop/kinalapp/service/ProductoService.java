@@ -35,12 +35,12 @@ public class ProductoService implements IProductoService{
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Producto> buscarPorCodigo(String codigo) {
+    public Optional<Producto> buscarPorCodigo(Long codigo) {
         return productoRepository.findById(codigo);
     }
 
     @Override
-    public Producto actualizar(String codigo, Producto producto) {
+    public Producto actualizar(Long codigo, Producto producto) {
         if (!productoRepository.existsById(codigo)) {
             throw new RuntimeException("Producto no encontrado con codigo " + codigo);
         }
@@ -51,7 +51,7 @@ public class ProductoService implements IProductoService{
     }
 
     @Override
-    public void eliminar(String codigo) {
+    public void eliminar(Long codigo) {
         Producto producto = productoRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun producto con el codigo:  " + codigo));
 
         producto.setEstado(0);
@@ -60,7 +60,7 @@ public class ProductoService implements IProductoService{
 
     @Override
     @Transactional (readOnly = true)
-    public boolean existePorCodigo(String codigo) {
+    public boolean existePorCodigo(Long codigo) {
         return productoRepository.existsById(codigo);
     }
 
@@ -71,10 +71,6 @@ public class ProductoService implements IProductoService{
     }
 
     private void validarProducto(Producto producto){
-
-        if (producto.getCodigo_producto() == null || producto.getCodigo_producto().trim().isEmpty()){
-            throw new IllegalArgumentException("El codigo del producto es un dato obligatorio.");
-        }
         if (producto.getNombre_producto() == null || producto.getNombre_producto().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del producto es obligtorio.");
         }

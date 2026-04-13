@@ -1,16 +1,14 @@
 package com.carlosxocop.kinalapp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="Productos")
 public class Producto{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name="codigo_producto")
-    private String codigo_producto;
+    private Long codigo_producto;
     @Column
     private String nombre_producto;
     @Column
@@ -23,7 +21,7 @@ public class Producto{
     public Producto() {
     }
 
-    public Producto(String codigo_producto, String nombre_producto, double precio, int stock, int estado) {
+    public Producto(Long codigo_producto, String nombre_producto, double precio, int stock, int estado) {
         this.codigo_producto = codigo_producto;
         this.nombre_producto = nombre_producto;
         this.precio = precio;
@@ -31,11 +29,11 @@ public class Producto{
         this.estado = estado;
     }
 
-    public String getCodigo_producto() {
+    public Long getCodigo_producto() {
         return codigo_producto;
     }
 
-    public void setCodigo_producto(String codigo_producto) {
+    public void setCodigo_producto(Long codigo_producto) {
         this.codigo_producto = codigo_producto;
     }
 
