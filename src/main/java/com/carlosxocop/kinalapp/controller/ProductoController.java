@@ -3,13 +3,18 @@ package com.carlosxocop.kinalapp.controller;
 import com.carlosxocop.kinalapp.entity.Producto;
 import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.service.IProductoService;
+import com.carlosxocop.kinalapp.service.ProductoService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/producto")
 public class ProductoController {
 
@@ -19,56 +24,29 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Producto>> listar(){
-        List<Producto> producto = productoService.listarTodos();
-        return ResponseEntity.ok(producto);
+    @GetMapping("/")
+    public String iniciarFormulario() {
+        return "redirect:/productos/nuevo";
     }
 
-    @PostMapping
-    public ResponseEntity<?> guardar(@RequestBody Producto producto) {
-        try {
-            Producto nuevoProducto = productoService.guardar(producto);
-            return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/nuevo")
+    public String formularioNuevoProducto(Model model) {
+        model.addAttribute("producto", new Producto());
+        return "formulario";
     }
 
-    @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable String codigo){
-        try{
-            if(!productoService.existePorCodigo(Long.valueOf(codigo))){
-                return  ResponseEntity.notFound().build();
-            }
-            productoService.eliminar(Long.valueOf(codigo));
-            return ResponseEntity.noContent().build();
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PostMapping("/guardar")
+    public String guardarProducto(@ModelAttribute Producto producto, Model model) {
+        productoService.guardar(producto);
+        model.addAttribute("mensaje", "El producto se guardó de manera exitosa ");
+        model.addAttribute("producto", new Producto()); // Limpiar formulario
+        return "formulario";
     }
 
-    @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable String codigo, @RequestBody Producto producto){
-        try {
-            if(!productoService.existePorCodigo(Long.valueOf(codigo))){
-                return ResponseEntity.notFound().build();
-
-            }
-            Producto productoActualizado = productoService.actualizar(Long.valueOf(codigo), producto);
-            return ResponseEntity.ok(productoActualizado);
-
-        }catch(IllegalArgumentException e){
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/activos")
-    public ResponseEntity<List<Producto>> listarActivos() {
-        List<Producto> activos = productoService.listarPorEstado(1);
-        return ResponseEntity.ok(activos);
+    @GetMapping("/lista")
+    public String listarProductos(Model model) {
+        List<Producto> productos = productoService.listarTodos();
+        model.addAttribute("productos", productos);
+        return "lista";
     }
 }
