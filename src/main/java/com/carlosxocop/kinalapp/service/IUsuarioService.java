@@ -11,13 +11,13 @@ public interface IUsuarioService {
 
     Usuario guardar(Usuario usuario);
 
-    Optional<Usuario> buscarPorCodigo(String codigo);
+    Optional<Usuario> buscarPorCodigo(Long codigo);
 
-    Usuario actualizar(String codigo, Usuario usuario);
+    Usuario actualizar(Long codigo, Usuario usuario);
 
-    void eliminar(String codigo);
+    void eliminar(Long codigo);
 
-    boolean existePorCodigo(String codigo);
+    boolean existePorCodigo(Long codigo);
 
     List<Usuario> listarPorEstado(int estado);
 

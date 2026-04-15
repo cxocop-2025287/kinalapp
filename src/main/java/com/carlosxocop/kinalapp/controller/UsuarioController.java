@@ -39,10 +39,10 @@ public class UsuarioController {
     @DeleteMapping("/{codigo}")
     public ResponseEntity<Void> eliminar(@PathVariable String codigo){
         try{
-            if(!usuarioService.existePorCodigo(codigo)){
+            if(!usuarioService.existePorCodigo(Long.valueOf(codigo))){
                 return  ResponseEntity.notFound().build();
             }
-            usuarioService.eliminar(codigo);
+            usuarioService.eliminar(Long.valueOf(codigo));
             return ResponseEntity.noContent().build();
         }catch(RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -52,11 +52,11 @@ public class UsuarioController {
     @PutMapping("/{codigo}")
     public ResponseEntity<?> actualizar(@PathVariable String codigo, @RequestBody Usuario usuario){
         try {
-            if(!usuarioService.existePorCodigo(codigo)){
+            if(!usuarioService.existePorCodigo(Long.valueOf(codigo))){
                 return ResponseEntity.notFound().build();
 
             }
-            Usuario usuarioActualizado = usuarioService.actualizar(codigo, usuario);
+            Usuario usuarioActualizado = usuarioService.actualizar(Long.valueOf(codigo), usuario);
             return ResponseEntity.ok(usuarioActualizado);
 
         }catch(IllegalArgumentException e){
