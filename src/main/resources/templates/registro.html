@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+  <header>
+    <h1>Crear Cuenta</h1>
+    <p>Regístrate para empezar</p>
+  </header>
+
+  <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+  <section>
+    <form method="post" action="/registro">
+      <div class="form-group">
+        <label>Nombre de Usuario</label>
+        <input type="text" name="username"  required>
+      </div>
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" name="email"  required>
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" name="password" required>
+      </div>
+      <div class="form-group">
+        <label>Rol</label>
+        <select name="rol">
+          <option value="USER">Usuario</option>
+          <option value="USER">Empleado</option>
+          <option value="ADMIN">Administrador</option>
+        </select>
+      </div>
+      <button type="submit">Registrarse</button>
+      <nav style="text-align: center; margin-top: 20px;">
+        <a href="/login">Inicia sesión</a>
+      </nav>
+    </form>
+  </section>
+
+  <footer>
+    <p>KinalApp</p>
+  </footer>
+</main>
+</body>
+</html>
