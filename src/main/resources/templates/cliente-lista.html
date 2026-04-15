@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Clientes - KinalApp</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-large">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Lista de Clientes</h1>
+                <p>Acá se encuentran los clientes registrados</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <div class="tabla-container">
+        <div>
+            <a href="/cliente/nuevo" class="button">+ Agregar Cliente</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>DPI</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cliente : ${clientes}">
+                <td th:text="${cliente.dpi_Cliente}"></td>
+                <td th:text="${cliente.nombreCliente}"></td>
+                <td th:text="${cliente.apellidoCliente}"></td>
+                <td th:text="${cliente.direccionCliente}"></td>
+                <td>
+                    <span th:if="${cliente.estado == 1}" class="estado-activo">Activo</span>
+                    <span th:if="${cliente.estado == 0}" class="estado-inactivo">Inactivo</span>
+                </td>
+                <td class="acciones">
+                    <a th:href="@{/cliente/editar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                       class="btn-editar"
+                       style="text-decoration: none; display: inline-block;">Editar</a>
+
+                    <form th:if="${cliente.estado == 1}"
+                          th:action="@{/cliente/eliminar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                          method="post" style="display: inline;">
+                        <button type="submit" class="btn-eliminar"
+                                onclick="return confirm('¿Estás seguro de desactivar este cliente?')">
+                            Desactivar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${clientes.isEmpty()}">
+                <td colspan="6" class="vacio">
+                    No hay clientes registrados
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp </p>
+    </footer>
+</main>
+</body>
+</html>
