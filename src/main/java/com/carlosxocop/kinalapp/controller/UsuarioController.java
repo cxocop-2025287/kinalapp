@@ -19,10 +19,10 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/login")
+    @GetMapping( "/login")
     public String mostrarLogin(Model model, HttpSession session) {
         if (session.getAttribute("usuario") != null) {
-            return "redirect:/producto/lista";
+            return "redirect:/inicio";
         }
         return "login";
     }
@@ -34,7 +34,7 @@ public class UsuarioController {
 
         if (usuario != null && usuario.getEstado() == 1) {
             session.setAttribute("usuario", usuario);
-            return "redirect:/producto/lista";
+            return "redirect:/inicio";
         } else {
             redirectAttributes.addFlashAttribute("error", "Usuario o contraseña incorrectos");
             return "redirect:/login";
