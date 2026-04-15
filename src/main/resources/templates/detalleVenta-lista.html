@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Detalle de Ventas</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-large">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Detalle de Ventas</h1>
+                <p>Acá se encuentran los detalles de todas las ventas</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <div class="tabla-container">
+        <div style="margin-bottom: 20px;">
+            <a href="/venta/lista" class="button" style="background: #28a745;">+ Nueva Venta</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Código Detalle</th>
+                <th>Código Venta</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="detalle : ${detalles}">
+                <td th:text="${detalle.codigo_detalle}"></td>
+                <td th:text="${detalle.venta.codigo_venta}"></td>
+                <td th:text="${detalle.producto.nombre_producto}"></td>
+                <td th:text="${detalle.cantidad}"></td>
+                <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.precio, 1, 2)}"></td>
+                <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.subtotal, 1, 2)}"></td>
+                <td class="acciones">
+                    <a th:href="@{/detalleVenta/editar/{codigo}(codigo=${detalle.codigo_detalle})}"
+                       class="btn-editar"
+                       style="text-decoration: none; display: inline-block;">Editar</a>
+                </td>
+            </tr>
+            <tr th:if="${detalles.isEmpty()}">
+                <td colspan="7" class="vacio">
+                    No hay detalles de ventas registrados
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp - Sistema de Gestión de Ventas © 2024</p>
+        <p style="font-size: 11px; margin-top: 5px;">Versión 1.0 | Todos los derechos reservados</p>
+    </footer>
+</main>
+</body>
+</html>

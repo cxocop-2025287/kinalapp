@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Venta</title>
@@ -55,6 +55,9 @@
                     <a th:href="@{/venta/editar/{codigo}(codigo=${venta.codigo_venta})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block; background: #2196F3;">Editar</a>
+                    <a th:href="@{/detalleVenta/nuevo/{codigoVenta}(codigoVenta=${venta.codigo_venta})}"
+                       class="btn-detalle"
+                       style="text-decoration: none; display: inline-block; background: #28a745; margin-left: 5px;">Agregar Detalle</a>
                 </td>
             </tr>
             <tr th:if="${ventas.isEmpty()}">

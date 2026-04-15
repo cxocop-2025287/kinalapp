@@ -23,10 +23,22 @@ public class DetalleVentaController {
     private final VentaService ventaService;
     private final ProductoService productoService;
 
-    public DetalleVentaController(DetalleVentaService detalleVentaService, VentaService ventaService, ProductoService productoService) {
+    public DetalleVentaController(DetalleVentaService detalleVentaService,
+                                  VentaService ventaService,
+                                  ProductoService productoService) {
         this.detalleVentaService = detalleVentaService;
         this.ventaService = ventaService;
         this.productoService = productoService;
+    }
+
+    @GetMapping
+    public String index(HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesion primero");
+            return "redirect:/login";
+        }
+        return "redirect:/detalleVenta/lista";
     }
 
     @GetMapping("/lista")
@@ -59,13 +71,16 @@ public class DetalleVentaController {
             model.addAttribute("productos", productos);
             return "detalleVenta-formulario";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Esta Venta no existe");
+            redirectAttributes.addFlashAttribute("error", "Venta no encontrada");
             return "redirect:/venta/lista";
         }
     }
 
     @PostMapping("/guardar")
-    public String guardarDetalleVenta(@ModelAttribute DetalleVenta detalleVenta, @RequestParam Long ventaCodigo, @RequestParam Long productoCodigo, RedirectAttributes redirectAttributes) {
+    public String guardarDetalleVenta(@ModelAttribute DetalleVenta detalleVenta,
+                                      @RequestParam Long ventaCodigo,
+                                      @RequestParam Long productoCodigo,
+                                      RedirectAttributes redirectAttributes) {
         try {
             Venta venta = ventaService.buscarPorCodigo(ventaCodigo)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
@@ -105,7 +120,10 @@ public class DetalleVentaController {
     }
 
     @PostMapping("/actualizar/{codigo}")
-    public String actualizarDetalleVenta(@PathVariable Long codigo, @ModelAttribute DetalleVenta detalleVenta, @RequestParam Long productoCodigo, RedirectAttributes redirectAttributes) {
+    public String actualizarDetalleVenta(@PathVariable Long codigo,
+                                         @ModelAttribute DetalleVenta detalleVenta,
+                                         @RequestParam Long productoCodigo,
+                                         RedirectAttributes redirectAttributes) {
         try {
             Producto producto = productoService.buscarPorCodigo(productoCodigo)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
