@@ -1,16 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Lista Productos</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<main>
+<main class="main-large">
   <header>
-    <h1> Lista de Productos</h1>
+    <h1>Lista de Productos</h1>
     <p>Acá se encuentran los productos ingresados</p>
-    <a href="/producto/nuevo" class="btn-nuevo">Agregar Producto</a>
+    <nav>
+      <a href="/producto/nuevo" class="button">+ Agregar Producto</a>
+    </nav>
   </header>
+
+  <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+  <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
   <div class="tabla-container">
     <table>
@@ -21,23 +27,38 @@
         <th>Precio</th>
         <th>Stock</th>
         <th>Estado</th>
+        <th>Acciones</th>
       </tr>
       </thead>
       <tbody>
-      <tr th:each="producto : ${productos}">
+      <tr th:each="producto : ${productos}"  th:if="${producto.estado == 1}">>
         <td th:text="${producto.codigo_producto}"></td>
         <td th:text="${producto.nombre_producto}"></td>
-        <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"</td>
+        <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"></td>
         <td th:text="${producto.stock}"></td>
         <td>
-          <span th:if="${producto.estado == 1}" class="estado-activo"> activo</span>
-          <span th:if="${producto.estado == 0}" class="estado-inactivo"> inactivo</span>
+          <span class="estado-activo">Activo </span>
+        </td>
+        <td class="acciones">
+          <form th:action="@{/producto/editar/{codigo}(codigo=${producto.codigo_producto})}"
+                method="get" style="display: inline;">
+            <button type="submit" class="button-editar">
+              Editar Producto
+            </button>
+          </form>
+
+          <form th:action="@{/producto/eliminar/{codigo}(codigo=${producto.codigo_producto})}"
+                method="post" style="display: inline;">
+            <button type="submit" class="button-eliminar"
+                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+              Eliminar
+            </button>
+          </form>
         </td>
       </tr>
       <tr th:if="${productos.isEmpty()}">
-        <td colspan="5" class="vacio">
-          <div class="vacio-icono"></div>
-          No hay productos
+        <td colspan="6" class="vacio">
+          No hay productos registrados
         </td>
       </tr>
       </tbody>
