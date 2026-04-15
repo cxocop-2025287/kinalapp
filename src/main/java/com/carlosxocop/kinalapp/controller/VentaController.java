@@ -1,73 +1,165 @@
 package com.carlosxocop.kinalapp.controller;
 
+import com.carlosxocop.kinalapp.entity.Cliente;
+import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.entity.Venta;
+import com.carlosxocop.kinalapp.service.IClienteService;
+import com.carlosxocop.kinalapp.service.IUsuarioService;
 import com.carlosxocop.kinalapp.service.IVentaService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-@RestController
-@RequestMapping("/ventas")
+@Controller
+@RequestMapping("/venta")
 public class VentaController {
+
     private final IVentaService ventaService;
+    private final IClienteService clienteService;
+    private final IUsuarioService usuarioService;
 
-    public VentaController(IVentaService ventaService) {
+    public VentaController(IVentaService ventaService, IClienteService clienteService, IUsuarioService usuarioService) {
         this.ventaService = ventaService;
+        this.clienteService = clienteService;
+        this.usuarioService = usuarioService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Venta>> listar(){
-        List<Venta> venta = ventaService.listarTodos();
-        return ResponseEntity.ok(venta);
+    @GetMapping("/nuevo")
+    public String formularioNuevaVenta(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        // Verificar si hay usuario en sesión
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión primero");
+            return "redirect:/login";
+        }
+
+        List<Cliente> clientes = clienteService.listarPorEstado(1);
+
+        model.addAttribute("venta", new Venta());
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("usuario", usuario);
+
+        return "venta-formulario";
     }
 
-    @PostMapping
-    public ResponseEntity<?> guardar(@RequestBody Venta venta) {
+    @PostMapping("/guardar")
+    public String guardarVenta(@RequestParam Long clienteDpi,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
         try {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            if (usuario == null) {
+                redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión primero");
+                return "redirect:/login";
+            }
+
+            Cliente cliente = clienteService.buscarPorDPI(clienteDpi).orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+            Venta venta = new Venta();
+            venta.setUsuario(usuario);
+            venta.setCliente(cliente);
+            venta.setTotal(BigDecimal.ZERO);
+            venta.setEstado(1);
+
             Venta nuevaVenta = ventaService.guardar(venta);
-            return new ResponseEntity<>(nuevaVenta, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+
+            redirectAttributes.addFlashAttribute("mensaje", "Venta creada exitosamente");
+            // Redirigir a agregar productos a la venta
+            return "redirect:/detalleVenta/nuevo/" + nuevaVenta.getCodigo_venta();
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al crear venta: " + e.getMessage());
+            return "redirect:/venta/nuevo";
         }
     }
 
-    @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long codigo){
-        try{
-            if(!ventaService.existePorCodigo(codigo)){
-                return  ResponseEntity.notFound().build();
-            }
-            ventaService.eliminar(codigo);
-            return ResponseEntity.noContent().build();
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/lista")
+    public String listarVentas(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión primero");
+            return "redirect:/login";
         }
+
+        List<Venta> ventas = ventaService.listarTodos();
+        model.addAttribute("ventas", ventas);
+        model.addAttribute("usuario", usuario);
+        return "venta-lista";
     }
 
-    @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable long codigo, @RequestBody Venta venta){
+    @GetMapping("/editar/{codigo}")
+    public String formularioEditarVenta(@PathVariable Long codigo,
+                                        Model model,
+                                        HttpSession session,
+                                        RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión primero");
+            return "redirect:/login";
+        }
+
         try {
-            if(!ventaService.existePorCodigo(codigo)){
-                return ResponseEntity.notFound().build();
+            Venta venta = ventaService.buscarPorCodigo(codigo)
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            List<Cliente> clientes = clienteService.listarPorEstado(1);
 
-            }
-            Venta ventaActualizada = ventaService.actualizar(codigo, venta);
-            return ResponseEntity.ok(ventaActualizada);
+            model.addAttribute("venta", venta);
+            model.addAttribute("clientes", clientes);
+            model.addAttribute("usuario", usuario);
+            return "venta-editar";
 
-        }catch(IllegalArgumentException e){
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Venta no encontrada");
+            return "redirect:/venta/lista";
         }
     }
 
-    @GetMapping("/activos")
-    public ResponseEntity<List<Venta>> listarActivos() {
-        List<Venta> activos = ventaService.listarPorEstado(1);
-        return ResponseEntity.ok(activos);
+    @PostMapping("/actualizar/{codigo}")
+    public String actualizarVenta(@PathVariable Long codigo,
+                                  @RequestParam Long clienteDpi,
+                                  @RequestParam int estado,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+            if (usuario == null) {
+                redirectAttributes.addFlashAttribute("error", "Debe iniciar sesión primero");
+                return "redirect:/login";
+            }
+
+            Cliente cliente = clienteService.buscarPorDPI(clienteDpi)
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+            Venta venta = ventaService.buscarPorCodigo(codigo)
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+
+            venta.setCliente(cliente);
+            venta.setEstado(estado);
+            venta.setUsuario(usuario);
+
+            ventaService.actualizar(codigo, venta);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Venta actualizada exitosamente");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar: " + e.getMessage());
+        }
+        return "redirect:/venta/lista";
     }
 
+    @PostMapping("/eliminar/{codigo}")
+    public String eliminarVenta(@PathVariable Long codigo, RedirectAttributes redirectAttributes) {
+        try {
+            ventaService.eliminar(codigo);
+            redirectAttributes.addFlashAttribute("mensaje", "Venta desactivada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
+        }
+        return "redirect:/venta/lista";
+    }
 }
