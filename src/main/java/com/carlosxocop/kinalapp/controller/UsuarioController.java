@@ -1,75 +1,70 @@
-
 package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.Usuario;
-import com.carlosxocop.kinalapp.service.IUsuarioService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.carlosxocop.kinalapp.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/usuarios")
+@Controller
 public class UsuarioController {
-    private final IUsuarioService usuarioService;
 
-    public UsuarioController(IUsuarioService usuarioService) {
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
-
-    @GetMapping
-    public ResponseEntity<List<Usuario>> listar(){
-        List<Usuario> usuario = usuarioService.listarTodos();
-        // Delegamos al servicio
-        return ResponseEntity.ok(usuario);
+    @GetMapping("/login")
+    public String mostrarLogin(Model model, HttpSession session) {
+        if (session.getAttribute("usuario") != null) {
+            return "redirect:/producto/lista";
+        }
+        return "login";
     }
 
-    @PostMapping
-    public ResponseEntity<?> guardar(@RequestBody Usuario usuario) {
+    @PostMapping("/login")
+    public String procesarLogin(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
+
+        Usuario usuario = usuarioService.listarTodos().stream().filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password)).findFirst().orElse(null);
+
+        if (usuario != null && usuario.getEstado() == 1) {
+            session.setAttribute("usuario", usuario);
+            return "redirect:/producto/lista";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Usuario o contraseña incorrectos");
+            return "redirect:/login";
+        }
+    }
+
+    @GetMapping("/registro")
+    public String mostrarRegistro(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        return "registro";
+    }
+
+    @PostMapping("/registro")
+    public String procesarRegistro(Usuario usuario, RedirectAttributes redirectAttributes) {
         try {
-            Usuario nuevoUsuario = usuarioService.guardar(usuario);
-            return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+            boolean existe = usuarioService.listarTodos().stream()
+                    .anyMatch(u -> u.getUsername().equals(usuario.getUsername()));
 
-    @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable String codigo){
-        try{
-            if(!usuarioService.existePorCodigo(Long.valueOf(codigo))){
-                return  ResponseEntity.notFound().build();
+            if (existe) {
+                redirectAttributes.addFlashAttribute("error", "El usuario ya existe");
+                return "redirect:/registro";
             }
-            usuarioService.eliminar(Long.valueOf(codigo));
-            return ResponseEntity.noContent().build();
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
+
+            usuario.setEstado(1);
+            usuarioService.guardar(usuario);
+            redirectAttributes.addFlashAttribute("mensaje", "Registro exitoso");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al registrar: " + e.getMessage());
+            return "redirect:/registro";
         }
-    }
-
-    @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable String codigo, @RequestBody Usuario usuario){
-        try {
-            if(!usuarioService.existePorCodigo(Long.valueOf(codigo))){
-                return ResponseEntity.notFound().build();
-
-            }
-            Usuario usuarioActualizado = usuarioService.actualizar(Long.valueOf(codigo), usuario);
-            return ResponseEntity.ok(usuarioActualizado);
-
-        }catch(IllegalArgumentException e){
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }catch(RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/activos")
-    public ResponseEntity<List<Usuario>> listarActivos() {
-        List<Usuario> activos = usuarioService.listarPorEstado(1);
-        return ResponseEntity.ok(activos);
     }
 }
