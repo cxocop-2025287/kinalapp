@@ -1,73 +1,92 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Lista Productos</title>
-  <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <title>Lista de Productos - KinalApp</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <main class="main-large">
-  <header>
-    <h1>Lista de Productos</h1>
-    <p>Acá se encuentran los productos ingresados</p>
-    <nav>
-      <a href="/producto/nuevo" class="button">+ Agregar Producto</a>
-    </nav>
-  </header>
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Lista de Productos</h1>
+                <p>Acá se encuentran los productos registrados</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
 
-  <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
-  <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
-  <div class="tabla-container">
-    <table>
-      <thead>
-      <tr>
-        <th>Código</th>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Stock</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="producto : ${productos}"  th:if="${producto.estado == 1}">>
-        <td th:text="${producto.codigo_producto}"></td>
-        <td th:text="${producto.nombre_producto}"></td>
-        <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"></td>
-        <td th:text="${producto.stock}"></td>
-        <td>
-          <span class="estado-activo">Activo </span>
-        </td>
-        <td class="acciones">
-          <form th:action="@{/producto/editar/{codigo}(codigo=${producto.codigo_producto})}"
-                method="get" style="display: inline;">
-            <button type="submit" class="button-editar">
-              Editar Producto
-            </button>
-          </form>
+    <div class="tabla-container">
+        <div style="margin-bottom: 20px;">
+            <a href="/producto/nuevo" class="button" style="background: #28a745;">+ Agregar Producto</a>
+        </div>
 
-          <form th:action="@{/producto/eliminar/{codigo}(codigo=${producto.codigo_producto})}"
-                method="post" style="display: inline;">
-            <button type="submit" class="button-eliminar"
-                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
-              Eliminar
-            </button>
-          </form>
-        </td>
-      </tr>
-      <tr th:if="${productos.isEmpty()}">
-        <td colspan="6" class="vacio">
-          No hay productos registrados
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
 
-  <footer>
-    <p>KinalApp</p>
-  </footer>
+            <tbody>
+            <!-- SOLO PRODUCTOS ACTIVOS -->
+            <tr th:each="producto : ${productos.?[estado == 1]}">
+
+                <td th:text="${producto.codigo_producto}"></td>
+                <td th:text="${producto.nombre_producto}"></td>
+                <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"></td>
+                <td th:text="${producto.stock}"></td>
+
+                <td>
+                    <span class="estado-activo">Activo</span>
+                </td>
+
+                <td class="acciones">
+                    <a th:href="@{/producto/editar/{codigo}(codigo=${producto.codigo_producto})}"
+                       class="btn-editar"
+                       style="text-decoration: none; display: inline-block;">
+                        Editar
+                    </a>
+
+                    <form th:action="@{/producto/eliminar/{codigo}(codigo=${producto.codigo_producto})}"
+                          method="post"
+                          style="display: inline;">
+                        <button type="submit" class="btn-eliminar"
+                                onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${productos.?[estado == 1].isEmpty()}">
+                <td colspan="6" class="vacio">
+                    No hay productos activos registrados
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp - Sistema de Gestión de Ventas © 2024</p>
+        <p style="font-size: 11px; margin-top: 5px;">Versión 1.0 | Todos los derechos reservados</p>
+    </footer>
 </main>
 </body>
 </html>

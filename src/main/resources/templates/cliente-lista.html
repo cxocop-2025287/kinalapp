@@ -28,6 +28,7 @@
         <div>
             <a href="/cliente/nuevo" class="button">+ Agregar Cliente</a>
         </div>
+
         <table>
             <thead>
             <tr>
@@ -39,36 +40,42 @@
                 <th>Acciones</th>
             </tr>
             </thead>
+
             <tbody>
-            <tr th:each="cliente : ${clientes}">
+            <tr th:each="cliente : ${clientes.?[estado == 1]}">
+
                 <td th:text="${cliente.dpi_Cliente}"></td>
                 <td th:text="${cliente.nombreCliente}"></td>
                 <td th:text="${cliente.apellidoCliente}"></td>
                 <td th:text="${cliente.direccionCliente}"></td>
+
                 <td>
-                    <span th:if="${cliente.estado == 1}" class="estado-activo">Activo</span>
-                    <span th:if="${cliente.estado == 0}" class="estado-inactivo">Inactivo</span>
+                    <span class="estado-activo">Activo</span>
                 </td>
+
                 <td class="acciones">
                     <a th:href="@{/cliente/editar/{dpi}(dpi=${cliente.dpi_Cliente})}"
                        class="btn-editar"
-                       style="text-decoration: none; display: inline-block;">Editar</a>
+                       style="text-decoration: none; display: inline-block;">
+                        Editar
+                    </a>
 
-                    <form th:if="${cliente.estado == 1}"
-                          th:action="@{/cliente/eliminar/{dpi}(dpi=${cliente.dpi_Cliente})}"
-                          method="post" style="display: inline;">
+                    <form th:action="@{/cliente/eliminar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                          method="post"
+                          style="display: inline;">
                         <button type="submit" class="btn-eliminar"
-                                onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
-                            Eliminar
+                                onclick="return confirm('¿Estás seguro de desactivar este cliente?')">
+                            Desactivar
                         </button>
                     </form>
                 </td>
             </tr>
-            <tr th:if="${clientes.isEmpty()}">
+            <tr th:if="${clientes.?[estado == 1].isEmpty()}">
                 <td colspan="6" class="vacio">
-                    No hay clientes registrados
+                    No hay clientes activos registrados
                 </td>
             </tr>
+
             </tbody>
         </table>
     </div>
