@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+  <header>
+    <h1>Iniciar Sesión</h1>
+    <p>Ingresa tus credenciales</p>
+  </header>
+
+  <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+  <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+  <section>
+    <form method="post" action="/login">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" name="username" placeholder="Ingresa tu usuario" required>
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" name="password" placeholder="Ingresa tu contraseña" required>
+      </div>
+      <button type="submit">Ingresar</button>
+      <nav style="text-align: center; margin-top: 20px;">
+        <a href="/registro">Regístrate</a>
+      </nav>
+    </form>
+  </section>
+
+  <footer>
+    <p>KinalApp</p>
+  </footer>
+</main>
+</body>
+</html>
