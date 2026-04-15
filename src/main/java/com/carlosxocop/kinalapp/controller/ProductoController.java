@@ -25,11 +25,6 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    @GetMapping("/")
-    public String iniciarFormulario() {
-        return "redirect:/producto/nuevo";
-    }
-
     @GetMapping("/nuevo")
     public String formularioNuevoProducto(Model model) {
         model.addAttribute("producto", new Producto());
