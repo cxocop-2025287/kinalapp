@@ -22,7 +22,9 @@
       </div>
       <div class="form-group">
         <label>Correo Electrónico</label>
-        <input type="email" name="email"  required>
+        <input type="email" name="email" required
+               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+               title="Ingresa un correo válido (ejemplo: usuario@correo.com)">>
       </div>
       <div class="form-group">
         <label>Contraseña</label>
@@ -32,7 +34,7 @@
         <label>Rol</label>
         <select name="rol">
           <option value="USER">Usuario</option>
-          <option value="USER">Empleado</option>
+          <option value="EMPLEADO">Empleado</option>
           <option value="ADMIN">Administrador</option>
         </select>
       </div>
