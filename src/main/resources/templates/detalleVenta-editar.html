@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Detalle de Venta</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Editar Detalle de Venta</h1>
+                <p>Modifique los datos del detalle</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <section>
+        <form th:action="@{/detalleVenta/actualizar/{codigo}(codigo=${detalleVenta.codigo_detalle})}" method="post">
+
+            <!-- CAMPO OCULTO: Enviar el código de la venta -->
+            <input type="hidden" name="ventaCodigo" th:value="${detalleVenta.venta.codigo_venta}">
+
+            <div class="form-group">
+                <label>Código Detalle</label>
+                <input type="text" th:value="${detalleVenta.codigo_detalle}" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label>Venta</label>
+                <input type="text" th:value="'Venta #' + ${detalleVenta.venta.codigo_venta}" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label for="producto">Producto</label>
+                <select id="producto" name="productoCodigo" required>
+                    <option th:each="producto : ${productos}"
+                            th:value="${producto.codigo_producto}"
+                            th:text="${producto.nombre_producto} + ' - Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"
+                            th:selected="${producto.codigo_producto == detalleVenta.producto.codigo_producto}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" id="cantidad" name="cantidad" th:value="${detalleVenta.cantidad}" step="1" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Precio Unitario</label>
+                <input type="text" th:value="'Q' + ${#numbers.formatDecimal(detalleVenta.precio, 1, 2)}" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label>Subtotal</label>
+                <input type="text" th:value="'Q' + ${#numbers.formatDecimal(detalleVenta.subtotal, 1, 2)}" disabled style="background: #e9ecef;">
+            </div>
+
+            <button type="submit">Actualizar Detalle</button>
+
+            <nav style="margin-top: 10px;">
+                <a href="/detalleVenta/lista" style="background: #6c757d;">← Volver a Detalles</a>
+            </nav>
+        </form>
+    </section>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp - Sistema de Gestión de Ventas © 2024</p>
+    </footer>
+</main>
+</body>
+</html>

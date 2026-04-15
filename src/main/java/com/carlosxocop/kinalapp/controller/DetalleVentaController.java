@@ -123,11 +123,17 @@ public class DetalleVentaController {
     public String actualizarDetalleVenta(@PathVariable Long codigo,
                                          @ModelAttribute DetalleVenta detalleVenta,
                                          @RequestParam Long productoCodigo,
+                                         @RequestParam Long ventaCodigo,  // ← Agrega este parámetro
                                          RedirectAttributes redirectAttributes) {
         try {
+            Venta venta = ventaService.buscarPorCodigo(ventaCodigo)
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
             Producto producto = productoService.buscarPorCodigo(productoCodigo)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            detalleVenta.setVenta(venta);  // ← Establece la venta
             detalleVenta.setProducto(producto);
+
             detalleVentaService.actualizar(codigo, detalleVenta);
             redirectAttributes.addFlashAttribute("mensaje", "Detalle actualizado exitosamente");
         } catch (Exception e) {
