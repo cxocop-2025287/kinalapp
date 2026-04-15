@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Venta</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-large">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Lista de Ventas</h1>
+                <p>Acá se encuentran todas las ventas registradas</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <div class="tabla-container">
+        <div style="margin-bottom: 20px;">
+            <a href="/venta/nuevo" class="button" style="background: #28a745;">+ Nueva Venta</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="venta : ${ventas}">
+                <td th:text="${venta.codigo_venta}"></td>
+                <td th:text="${venta.fecha}"></td>
+                <td th:text="${venta.cliente.nombreCliente} + ' ' + ${venta.cliente.apellidoCliente}"></td>
+                <td th:text="${venta.usuario.username}"></td>
+                <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(venta.total, 1, 2)}"></td>
+                <td>
+                    <span th:if="${venta.estado == 1}" class="estado-activo">Activo</span>
+                    <span th:if="${venta.estado == 0}" class="estado-inactivo">Inactivo</span>
+                </td>
+                <td class="acciones">
+                    <a th:href="@{/venta/editar/{codigo}(codigo=${venta.codigo_venta})}"
+                       class="btn-editar"
+                       style="text-decoration: none; display: inline-block; background: #2196F3;">Editar</a>
+                </td>
+            </tr>
+            <tr th:if="${ventas.isEmpty()}">
+                <td colspan="7" class="vacio">
+                    No hay ventas registradas
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp</p>
+    </footer>
+</main>
+</body>
+</html>
