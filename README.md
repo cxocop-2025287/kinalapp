@@ -1,7 +1,6 @@
 # KinalApp - API de Gestión de Ventas
 
-
-API REST para la gestión de ventas que permite administrar clientes, usuarios, productos y transacciones de venta con control de inventario.
+Pagina Web gestor de Productos, Ventas y Clientes.
 
 ## Tecnologías
 * *Java 17*
@@ -26,3 +25,5 @@ API REST para la gestión de ventas que permite administrar clientes, usuarios, 
 7. Abrir el paquete com/carlosxocop/kinalapp
 9. Configurar application.properties (cambiar password y username)
 10. Ejecutar la aplicación desde la clase KinalappApplication.java
+11. Abrir un navegador
+12. Entrar a la ruta http://localhost:8001/login
