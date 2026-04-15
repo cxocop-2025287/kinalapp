@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Detalle de Venta</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Nuevo Detalle de Venta</h1>
+                <p>Ingrese los datos del detalle de venta</p>
+            </div>
+        </div>
+        <nav>
+            <a th:href="@{/detalleVenta/lista}" class="button">← Volver a Detalles</a>
+        </nav>
+    </header>
+
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <section>
+        <form th:action="@{/detalleVenta/guardar}" method="post">
+            <input type="hidden" name="ventaCodigo" th:value="${venta.codigo_venta}"/>
+
+            <div class="form-group">
+                <label>Venta</label>
+                <input type="text" th:value="${venta.codigo_venta} + ' - ' + ${venta.cliente.nombreCliente}" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label for="productoCodigo">Producto</label>
+                <select id="productoCodigo" name="productoCodigo" required>
+                    <option value="">Seleccione un producto</option>
+                    <option th:each="producto : ${productos}"
+                            th:value="${producto.codigo_producto}"
+                            th:text="${producto.nombre_producto} + ' (Q' + ${#numbers.formatDecimal(producto.precio,1,2)} + ')'">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" id="cantidad" name="cantidad" min="1" value="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio Unitario</label>
+                <input type="number" id="precio" name="precio" step="0.01" min="0" required>
+            </div>
+
+            <button type="submit">Agregar Detalle</button>
+
+            <nav style="margin-top: 10px;">
+                <a th:href="@{/detalleVenta/lista}" style="background: #6c757d;">← Volver a Detalles</a>
+            </nav>
+        </form>
+    </section>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp</p>
+    </footer>
+</main>
+</body>
+</html>
