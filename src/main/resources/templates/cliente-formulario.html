@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Cliente </title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Agregar Cliente</h1>
+                <p>Ingrese los datos del nuevo cliente</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <section>
+        <form th:action="@{/cliente/guardar}" th:object="${cliente}" method="post">
+
+            <div class="form-group">
+                <label for="nombre">Nombre del Cliente </label>
+                <input type="text"
+                       id="nombre"
+                       name="nombreCliente"
+                       th:field="*{nombreCliente}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido del Cliente </label>
+                <input type="text"
+                       id="apellido"
+                       name="apellidoCliente"
+                       th:field="*{apellidoCliente}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección del Cliente </label>
+                <input type="text"
+                       id="direccion"
+                       name="direccionCliente"
+                       th:field="*{direccionCliente}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado" th:field="*{estado}">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+
+            <button type="submit"> Guardar Cliente</button>
+
+            <nav style="margin-top: 10px;">
+                <a href="/cliente/lista" style="background: #6c757d;">← Volver a Clientes</a>
+            </nav>
+        </form>
+    </section>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp</p>
+    </footer>
+</main>
+</body>
+</html>
