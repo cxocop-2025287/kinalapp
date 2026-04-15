@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>KinalApp - Panel Principal</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-large">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>KinalApp</h1>
+                <p>Sistema de Gestión de Ventas</p>
+            </div>
+        </div>
+        <nav>
+            <div class="nav-logo">
+                <form action="/logout" method="post" style="display: inline;">
+                    <button type="submit" style="width: auto; padding: 10px 20px; background: #f42b4a;">Cerrar Sesión</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <section>
+        <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
+            <h2 style="color: #0c2a41;">¡Bienvenido, <span th:text="${usuario.username}"></span>!</h2>
+            <p style="margin-top: 10px; color: #666;">Rol: <strong th:text="${usuario.rol}"></strong> | Email: <span th:text="${usuario.email}"></span></p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+            <!-- Tarjeta Clientes -->
+            <a href="/cliente/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
+                    <span style="font-size: 60px;"></span>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="color: #0c2a41; margin-bottom: 10px;">Clientes</h3>
+                    <p style="color: #666; font-size: 14px;">Gestiona la información de tus clientes, registra nuevos, edita o elimina registros existentes.</p>
+                </div>
+            </a>
+
+            <a href="/producto/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
+                    <span style="font-size: 60px;"></span>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="color: #0c2a41; margin-bottom: 10px;">Productos</h3>
+                    <p style="color: #666; font-size: 14px;">Administra tu catálogo de productos, controla precios, stock y disponibilidad.</p>
+                </div>
+            </a>
+
+            <a href="/venta/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
+                    <span style="font-size: 60px;"></span>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="color: #0c2a41; margin-bottom: 10px;">Ventas</h3>
+                    <p style="color: #666; font-size: 14px;">Registra nuevas ventas, consulta el historial y gestiona transacciones.</p>
+                </div>
+            </a>
+
+
+            <a href="/detalleVenta" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
+                    <span style="font-size: 60px;"></span>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="color: #0c2a41; margin-bottom: 10px;">Detalle de Ventas</h3>
+                    <p style="color: #666; font-size: 14px;">Consulta el detalle completo de cada venta realizada en el sistema.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp - Sistema de Gestión de Ventas © 2024</p>
+        <p style="font-size: 11px; margin-top: 5px;">Versión 1.0 | Todos los derechos reservados</p>
+    </footer>
+</main>
+</body>
+</html>
