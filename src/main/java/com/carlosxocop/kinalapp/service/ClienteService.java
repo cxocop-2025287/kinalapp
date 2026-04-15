@@ -65,7 +65,7 @@ public class ClienteService implements IClienteService{
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Cliente> buscarPorDPI(String dpi) {
+    public Optional<Cliente> buscarPorDPI(Long dpi) {
         /*
         Buscar un cliente con dpi
          */
@@ -74,7 +74,7 @@ public class ClienteService implements IClienteService{
     }
 
     @Override
-    public Cliente actualizar(String dpi, Cliente cliente) {
+    public Cliente actualizar(Long dpi, Cliente cliente) {
         //Actualiza un cliente existente
         if (!clienteRepository.existsById(dpi)) {
             throw new RuntimeException("Cliente no encontrado con DPI "+ dpi );
@@ -91,7 +91,7 @@ public class ClienteService implements IClienteService{
     }
 
     @Override
-    public void eliminar(String dpi) {
+    public void eliminar(Long dpi) {
         Cliente cliente = clienteRepository.findById(dpi).orElseThrow(() -> new IllegalArgumentException("No existe ningun cliente con el dpi : " + dpi));
 
         cliente.setEstado(0);
@@ -100,7 +100,7 @@ public class ClienteService implements IClienteService{
 
     @Override
     @Transactional (readOnly = true)
-    public boolean existePorDPI(String dpi) {
+    public boolean existePorDPI(Long dpi) {
         // Verificar si existe el cliente
 
         return clienteRepository.existsById(dpi);
@@ -112,12 +112,7 @@ public class ClienteService implements IClienteService{
         *Vlidaciones del negocio: Este metodo se hara privado
         * porque es algo interno del servicio
         * */
-        if (cliente.getDpi_Cliente() == null || cliente.getDpi_Cliente().trim().isEmpty()){
-            // SI el dpi es null o esta vacio despues de quitar espacios
-            // lanza una exception con un mensaje
-            throw new IllegalArgumentException("El DPI es un dato obligatorio.");
 
-        }
         if (cliente.getNombreCliente() == null || cliente.getNombreCliente().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del cliente es obligtorio.");
         }

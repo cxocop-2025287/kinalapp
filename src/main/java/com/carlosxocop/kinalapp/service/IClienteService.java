@@ -19,19 +19,19 @@ public interface IClienteService {
 
     // Parametros : recibe un objeto de tipo cliente con los datos a guardar
     // Evita el nullPonterException
-    Optional<Cliente> buscarPorDPI(String dpi);
+    Optional<Cliente> buscarPorDPI(Long dpi);
 
     // Metodo que actualiza un cliente
-    Cliente actualizar(String dpi, Cliente cliente);
+    Cliente actualizar(Long dpi, Cliente cliente);
     // Parametros: dpi del cliente a actualizar
     // cliente: objeto con los datos nuevos
     // este retorna un objeto de tipo cliente ya actualizado
 
     //Metodo de tipo void para eliminar a un cliente
-    void eliminar(String dpi);
+    void eliminar(Long dpi);
 
     //boolean retorna veradero si existe y falso si no existe
-    boolean existePorDPI(String dpi);
+    boolean existePorDPI(Long dpi);
 
     // muestra los dependiendo de su estado
     List<Cliente> listarPorEstado(int estado);
