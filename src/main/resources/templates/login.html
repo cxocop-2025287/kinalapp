@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Iniciar Sesión</title>
@@ -16,7 +16,8 @@
   <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
   <section>
-    <form method="post" action="/login">
+    <form method="post" th:action="@{/login}">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
       <div class="form-group">
         <label>Usuario</label>
         <input type="text" name="username" placeholder="Ingresa tu usuario" required>
