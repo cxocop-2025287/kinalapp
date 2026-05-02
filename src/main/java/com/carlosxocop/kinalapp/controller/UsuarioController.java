@@ -2,7 +2,6 @@ package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.service.UsuarioService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,26 +18,14 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping( "/login")
-    public String mostrarLogin(Model model, HttpSession session) {
-        if (session.getAttribute("usuario") != null) {
-            return "redirect:/inicio";
+    @GetMapping("/login")
+    public String mostrarLogin(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos");
+        }if (logout != null) {
+            model.addAttribute("mensaje", "Sesión cerrada correctamente");
         }
         return "login";
-    }
-
-    @PostMapping("/login")
-    public String procesarLogin(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
-
-        Usuario usuario = usuarioService.listarTodos().stream().filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password)).findFirst().orElse(null);
-
-        if (usuario != null && usuario.getEstado() == 1) {
-            session.setAttribute("usuario", usuario);
-            return "redirect:/inicio";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Usuario o contraseña incorrectos");
-            return "redirect:/login";
-        }
     }
 
     @GetMapping("/registro")
@@ -50,8 +37,7 @@ public class UsuarioController {
     @PostMapping("/registro")
     public String procesarRegistro(Usuario usuario, RedirectAttributes redirectAttributes) {
         try {
-            boolean existe = usuarioService.listarTodos().stream()
-                    .anyMatch(u -> u.getUsername().equals(usuario.getUsername()));
+            boolean existe = usuarioService.listarTodos().stream().anyMatch(Usuario -> Usuario.getUsername().equals(usuario.getUsername()));
 
             if (existe) {
                 redirectAttributes.addFlashAttribute("error", "El usuario ya existe");
@@ -59,6 +45,9 @@ public class UsuarioController {
             }
 
             usuario.setEstado(1);
+            if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
+                usuario.setRol("USER");
+            }
             usuarioService.guardar(usuario);
             redirectAttributes.addFlashAttribute("mensaje", "Registro exitoso");
             return "redirect:/login";
