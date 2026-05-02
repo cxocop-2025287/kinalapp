@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>KinalApp - Panel Principal</title>
@@ -19,6 +19,7 @@
         <nav>
             <div class="nav-logo">
                 <form action="/logout" method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" style="width: auto; padding: 10px 20px; background: #f42b4a;">Cerrar Sesión</button>
                 </form>
             </div>
@@ -31,11 +32,9 @@
     <section>
         <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
             <h2 style="color: #0c2a41;">¡Bienvenido, <span th:text="${usuario.username}"></span>!</h2>
-            <p style="margin-top: 10px; color: #666;">Rol: <strong th:text="${usuario.rol}"></strong> | Email: <span th:text="${usuario.email}"></span></p>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-            <!-- Tarjeta Clientes -->
             <a href="/cliente/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
@@ -45,8 +44,7 @@
                     <p style="color: #666; font-size: 14px;">Gestiona la información de tus clientes, registra nuevos, edita o elimina registros existentes.</p>
                 </div>
             </a>
-
-            <a href="/producto/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+            <a sec:authorize="hasRole('ADMIN')" href="/producto/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
                 </div>
@@ -65,8 +63,6 @@
                     <p style="color: #666; font-size: 14px;">Registra nuevas ventas, consulta el historial y gestiona transacciones.</p>
                 </div>
             </a>
-
-
             <a href="/detalleVenta" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
