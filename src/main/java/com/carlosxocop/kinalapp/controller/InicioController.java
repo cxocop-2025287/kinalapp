@@ -1,5 +1,6 @@
 package com.carlosxocop.kinalapp.controller;
 
+import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.repository.UsuarioRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,9 @@ public class InicioController {
 
     @GetMapping({"/", "/inicio"})
     public String mostrarInicio(Authentication authentication, Model model) {
-        model.addAttribute("username", authentication.getName());
+        String username = authentication.getName();
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        model.addAttribute("usuario", usuario);
         return "inicio";
     }
 }
