@@ -2,12 +2,10 @@ package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.DetalleVenta;
 import com.carlosxocop.kinalapp.entity.Producto;
-import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.entity.Venta;
 import com.carlosxocop.kinalapp.service.DetalleVentaService;
 import com.carlosxocop.kinalapp.service.ProductoService;
 import com.carlosxocop.kinalapp.service.VentaService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,35 +30,19 @@ public class DetalleVentaController {
     }
 
     @GetMapping
-    public String index(HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesion primero");
-            return "redirect:/login";
-        }
+    public String index() {
         return "redirect:/detalleVenta/lista";
     }
 
     @GetMapping("/lista")
-    public String listarDetalleVentas(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesion primero");
-            return "redirect:/login";
-        }
+    public String listarDetalleVentas(Model model) {
         List<DetalleVenta> detalles = detalleVentaService.listarTodos();
         model.addAttribute("detalles", detalles);
         return "detalleVenta-lista";
     }
 
     @GetMapping("/nuevo/{codigoVenta}")
-    public String formularioNuevoDetalle(@PathVariable Long codigoVenta, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesion primero");
-            return "redirect:/login";
-        }
-
+    public String formularioNuevoDetalle(@PathVariable Long codigoVenta, Model model, RedirectAttributes redirectAttributes) {
         try {
             Venta venta = ventaService.buscarPorCodigo(codigoVenta)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
@@ -77,10 +59,7 @@ public class DetalleVentaController {
     }
 
     @PostMapping("/guardar")
-    public String guardarDetalleVenta(@ModelAttribute DetalleVenta detalleVenta,
-                                      @RequestParam Long ventaCodigo,
-                                      @RequestParam Long productoCodigo,
-                                      RedirectAttributes redirectAttributes) {
+    public String guardarDetalleVenta(@ModelAttribute DetalleVenta detalleVenta, @RequestParam Long ventaCodigo, @RequestParam Long productoCodigo, RedirectAttributes redirectAttributes) {
         try {
             Venta venta = ventaService.buscarPorCodigo(ventaCodigo)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
@@ -99,12 +78,7 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/editar/{codigo}")
-    public String formularioEditarDetalle(@PathVariable Long codigo, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
-        if (usuario == null) {
-            redirectAttributes.addFlashAttribute("error", "Debe iniciar sesion primero");
-            return "redirect:/login";
-        }
+    public String formularioEditarDetalle(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes) {
         try {
             DetalleVenta detalle = detalleVentaService.buscarPorCodigo(codigo)
                     .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
@@ -120,20 +94,13 @@ public class DetalleVentaController {
     }
 
     @PostMapping("/actualizar/{codigo}")
-    public String actualizarDetalleVenta(@PathVariable Long codigo,
-                                         @ModelAttribute DetalleVenta detalleVenta,
-                                         @RequestParam Long productoCodigo,
-                                         @RequestParam Long ventaCodigo,  // ← Agrega este parámetro
-                                         RedirectAttributes redirectAttributes) {
+    public String actualizarDetalleVenta(@PathVariable Long codigo, @ModelAttribute DetalleVenta detalleVenta, @RequestParam Long productoCodigo, @RequestParam Long ventaCodigo, RedirectAttributes redirectAttributes) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(ventaCodigo)
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
-            Producto producto = productoService.buscarPorCodigo(productoCodigo)
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            Venta venta = ventaService.buscarPorCodigo(ventaCodigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            Producto producto = productoService.buscarPorCodigo(productoCodigo).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-            detalleVenta.setVenta(venta);  // ← Establece la venta
+            detalleVenta.setVenta(venta);
             detalleVenta.setProducto(producto);
-
             detalleVentaService.actualizar(codigo, detalleVenta);
             redirectAttributes.addFlashAttribute("mensaje", "Detalle actualizado exitosamente");
         } catch (Exception e) {
@@ -148,7 +115,7 @@ public class DetalleVentaController {
             detalleVentaService.eliminar(codigo);
             redirectAttributes.addFlashAttribute("mensaje", "Detalle eliminado exitosamente");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " +e.getMessage());
         }
         return "redirect:/detalleVenta/lista";
     }
