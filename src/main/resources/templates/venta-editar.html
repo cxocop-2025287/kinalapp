@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Venta - KinalApp</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="main-small">
+    <header>
+        <div class="header-logo">
+            <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+            <div class="header-content">
+                <h1>Editar Venta</h1>
+                <p>Modifique los datos de la venta</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/inicio" class="button">← Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+    <section>
+        <form th:action="@{/venta/actualizar/{codigo}(codigo=${venta.codigo_venta})}" method="post">
+            <div class="form-group">
+                <label>Codigo de Venta</label>
+                <input type="text" th:value="${venta.codigo_venta}" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label>Cliente</label>
+                <input type="text" th:value="${venta.cliente.nombreCliente} + ' ' + ${venta.cliente.apellidoCliente} + ' (DPI: ' + ${venta.cliente.dpi_Cliente} + ')'" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label>Vendedor</label>
+                <input type="text" th:value="${venta.usuario.username} + ' (' + ${venta.usuario.rol} + ')'" disabled style="background: #e9ecef;">
+            </div>
+
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha" th:value="${venta.fecha}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado">
+                    <option value="1" th:selected="${venta.estado == 1}">Activo</option>
+                    <option value="0" th:selected="${venta.estado == 0}">Inactivo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="total">Total</label>
+                <input type="number" id="total" name="total" step="0.01" min="0" th:value="${venta.total}" required>
+            </div>
+
+            <button type="submit">Actualizar Venta</button>
+
+            <nav style="margin-top: 10px;">
+                <a href="/venta/lista" style="background: #6c757d;">← Volver a Ventas</a>
+            </nav>
+        </form>
+    </section>
+
+    <footer>
+        <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+        <p>KinalApp</p>
+    </footer>
+</main>
+</body>
+</html>
