@@ -1,18 +1,13 @@
 package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.Producto;
-import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.service.IProductoService;
-import com.carlosxocop.kinalapp.service.ProductoService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.carlosxocop.kinalapp.util.JwtIdEncryptor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -42,22 +37,23 @@ public class ProductoController {
         return "redirect:/producto/lista";
     }
 
-    @GetMapping("/editar/{codigo}")
-    public String formularioEditarProducto(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/editar/{id}")
+    public String formularioEditarProducto(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         try {
+            Long codigo = JwtIdEncryptor.decryptId(id);
             Producto producto = productoService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
             model.addAttribute("producto", producto);
-            return "editar";  // Vista diferente: editar.html
+            return "editar";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Producto no encontrado");
             return "redirect:/producto/lista";
         }
     }
 
-
-    @PostMapping("/actualizar/{codigo}")
-    public String actualizarProducto(@PathVariable Long codigo, @ModelAttribute Producto producto, RedirectAttributes redirectAttributes) {
+    @PostMapping("/actualizar/{id}")
+    public String actualizarProducto(@PathVariable String id, @ModelAttribute Producto producto, RedirectAttributes redirectAttributes) {
         try {
+            Long codigo = JwtIdEncryptor.decryptId(id);
             productoService.actualizar(codigo, producto);
             redirectAttributes.addFlashAttribute("mensaje", "¡Producto actualizado exitosamente!");
         } catch (Exception e) {
@@ -66,9 +62,10 @@ public class ProductoController {
         return "redirect:/producto/lista";
     }
 
-    @PostMapping("/eliminar/{codigo}")
-    public String eliminarProducto(@PathVariable Long codigo, RedirectAttributes redirectAttributes) {
+    @PostMapping("/eliminar/{id}")
+    public String eliminarProducto(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
+            Long codigo = JwtIdEncryptor.decryptId(id);
             productoService.eliminar(codigo);
             redirectAttributes.addFlashAttribute("mensaje", "Producto desactivado exitosamente");
         } catch (Exception e) {
@@ -76,7 +73,6 @@ public class ProductoController {
         }
         return "redirect:/producto/lista";
     }
-
 
     @GetMapping("/lista")
     public String listarProductos(Model model) {

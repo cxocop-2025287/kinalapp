@@ -6,6 +6,7 @@ import com.carlosxocop.kinalapp.entity.Venta;
 import com.carlosxocop.kinalapp.service.DetalleVentaService;
 import com.carlosxocop.kinalapp.service.ProductoService;
 import com.carlosxocop.kinalapp.service.VentaService;
+import com.carlosxocop.kinalapp.util.JwtIdEncryptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,10 +42,8 @@ public class DetalleVentaController {
         List<DetalleVenta> detalles;
 
         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            // ADMIN ve todos los detalles
             detalles = detalleVentaService.listarTodos();
         } else {
-            // USER solo ve los detalles de sus propias ventas
             detalles = detalleVentaService.listarTodos().stream()
                     .filter(d -> d.getVenta().getUsuario().getUsername().equals(authentication.getName()))
                     .collect(Collectors.toList());
@@ -55,9 +54,10 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/nuevo/{codigoVenta}")
-    public String formularioNuevoDetalle(@PathVariable Long codigoVenta, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+    public String formularioNuevoDetalle(@PathVariable String codigoVenta, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(codigoVenta)
+            Long ventaCodigo = JwtIdEncryptor.decryptId(codigoVenta);
+            Venta venta = ventaService.buscarPorCodigo(ventaCodigo)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
 
             boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -75,7 +75,7 @@ public class DetalleVentaController {
             model.addAttribute("productos", productos);
             return "detalleVenta-formulario";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Venta no encontrada");
+            redirectAttributes.addFlashAttribute("error", "Venta no encontrada o enlace inválido");
             return "redirect:/venta/lista";
         }
     }
@@ -108,10 +108,10 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/editar/{codigo}")
-    public String formularioEditarDetalle(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+    public String formularioEditarDetalle(@PathVariable String codigo, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            DetalleVenta detalle = detalleVentaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
-
+            Long codigoDetalle = JwtIdEncryptor.decryptId(codigo);
+            DetalleVenta detalle = detalleVentaService.buscarPorCodigo(codigoDetalle).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
 
             boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
             boolean isOwner = detalle.getVenta().getUsuario().getUsername().equals(authentication.getName());
@@ -127,14 +127,15 @@ public class DetalleVentaController {
             model.addAttribute("productos", productos);
             return "detalleVenta-editar";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Detalle no encontrado");
+            redirectAttributes.addFlashAttribute("error", "Detalle no encontrado o enlace inválido");
             return "redirect:/detalleVenta/lista";
         }
     }
 
     @PostMapping("/actualizar/{codigo}")
-    public String actualizarDetalleVenta(@PathVariable Long codigo, @ModelAttribute DetalleVenta detalleVenta, @RequestParam Long productoCodigo, @RequestParam Long ventaCodigo, RedirectAttributes redirectAttributes, Authentication authentication) {
+    public String actualizarDetalleVenta(@PathVariable String codigo, @ModelAttribute DetalleVenta detalleVenta, @RequestParam Long productoCodigo, @RequestParam Long ventaCodigo, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
+            Long codigoDetalle = JwtIdEncryptor.decryptId(codigo);
             Venta venta = ventaService.buscarPorCodigo(ventaCodigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
 
             boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -149,7 +150,7 @@ public class DetalleVentaController {
 
             detalleVenta.setVenta(venta);
             detalleVenta.setProducto(producto);
-            detalleVentaService.actualizar(codigo, detalleVenta);
+            detalleVentaService.actualizar(codigoDetalle, detalleVenta);
             redirectAttributes.addFlashAttribute("mensaje", "Detalle actualizado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar: " + e.getMessage());
@@ -158,9 +159,10 @@ public class DetalleVentaController {
     }
 
     @PostMapping("/eliminar/{codigo}")
-    public String eliminarDetalleVenta(@PathVariable Long codigo, RedirectAttributes redirectAttributes, Authentication authentication) {
+    public String eliminarDetalleVenta(@PathVariable String codigo, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            DetalleVenta detalle = detalleVentaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
+            Long codigoDetalle = JwtIdEncryptor.decryptId(codigo);
+            DetalleVenta detalle = detalleVentaService.buscarPorCodigo(codigoDetalle).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
 
             boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
             boolean isOwner = detalle.getVenta().getUsuario().getUsername().equals(authentication.getName());
@@ -170,7 +172,7 @@ public class DetalleVentaController {
                 return "redirect:/detalleVenta/lista";
             }
 
-            detalleVentaService.eliminar(codigo);
+            detalleVentaService.eliminar(codigoDetalle);
             redirectAttributes.addFlashAttribute("mensaje", "Detalle eliminado exitosamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
