@@ -2,6 +2,7 @@ package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.Usuario;
 import com.carlosxocop.kinalapp.service.IUsuarioService;
+import com.carlosxocop.kinalapp.util.JwtIdEncryptor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,12 +62,13 @@ public class UsuarioController {
         return "redirect:/usuarios/lista";
     }
 
-    @PostMapping("/eliminar/{codigo}")
-    public String eliminarUsuario(@PathVariable Long codigo,
+    @PostMapping("/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable String id,
                                   RedirectAttributes redirectAttributes,
                                   Authentication authentication,
                                   HttpServletRequest request) {
         try {
+            Long codigo = JwtIdEncryptor.decryptId(id);
             String usernameActual = authentication.getName();
             Usuario usuarioActual = usuarioService.buscarPorUsername(usernameActual).orElse(null);
 
