@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -27,11 +27,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/images/**").permitAll()
+        http.authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers("/css/**", "/images/**", "/js/**").permitAll()
                         .requestMatchers("/login", "/registro").permitAll()
-                        .requestMatchers("/producto/**").hasRole("ADMIN")
+                        .requestMatchers("/cliente/nuevo", "/cliente/guardar", "/cliente/editar/**", "/cliente/actualizar/**", "/cliente/eliminar/**").hasRole("ADMIN")
+                        .requestMatchers("/cliente/lista").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/producto/nuevo", "/producto/guardar", "/producto/editar/**", "/producto/actualizar/**", "/producto/eliminar/**").hasRole("ADMIN")
+                        .requestMatchers("/producto/lista").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/venta/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/detalleVenta/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/usuarios/lista", "/usuarios/nuevo", "/usuarios/guardar", "/usuarios/eliminar/**").hasRole("ADMIN")
+                        .requestMatchers("/", "/inicio").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -70,7 +77,6 @@ public class SecurityConfig {
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
-
 }

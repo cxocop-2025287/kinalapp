@@ -25,7 +25,16 @@
 
     <section>
         <form th:action="@{/cliente/guardar}" th:object="${cliente}" method="post">
-
+            <div class="form-group">
+            <label for="dpi">DPI del Cliente *</label>
+                    <input type="number"
+                        id="dpi"
+                        name="dpi_Cliente"
+                        th:field="*{dpi_Cliente}"
+                        required
+                        min="1000000000000"
+                        max="9999999999999">
+            </div>
             <div class="form-group">
                 <label for="nombre">Nombre del Cliente </label>
                 <input type="text"
