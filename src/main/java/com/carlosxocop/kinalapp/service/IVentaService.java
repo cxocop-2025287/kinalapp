@@ -21,4 +21,5 @@ public interface IVentaService {
 
     List<Venta> listarPorEstado(int estado);
 
+    List<Venta> listarVentasPorUsuario(String username);
 }

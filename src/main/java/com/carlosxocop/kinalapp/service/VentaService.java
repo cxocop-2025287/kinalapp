@@ -25,6 +25,11 @@ public class VentaService implements IVentaService {
         return ventaRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Venta> listarVentasPorUsuario(String username) {
+        return ventaRepository.findByUsuarioUsername(username);
+    }
+
     @Override
     public Venta guardar(Venta venta) {
         validarVenta(venta);
