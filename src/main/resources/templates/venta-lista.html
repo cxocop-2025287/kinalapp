@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Venta</title>
@@ -26,12 +26,12 @@
 
     <div class="tabla-container">
         <div style="margin-bottom: 20px;">
-            <a href="/venta/nuevo" class="button" style="background: #28a745;">+ Nueva Venta</a>
+            <a sec:authorize="hasAnyRole('ADMIN', 'USER')" href="/venta/nuevo" class="button" style="background: #28a745;">+ Nueva Venta</a>
         </div>
         <table>
             <thead>
             <tr>
-                <th>Codigo</th>
+                <th>Código</th>
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Vendedor</th>
@@ -52,10 +52,10 @@
                     <span th:if="${venta.estado == 0}" class="estado-inactivo">Inactivo</span>
                 </td>
                 <td class="acciones">
-                    <a th:href="@{/venta/editar/{codigo}(codigo=${venta.codigo_venta})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/venta/editar/{codigo}(codigo=${venta.codigo_venta})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block; background: #2196F3;">Editar</a>
-                    <a th:href="@{/detalleVenta/nuevo/{codigoVenta}(codigoVenta=${venta.codigo_venta})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/nuevo/{codigoVenta}(codigoVenta=${venta.codigo_venta})}"
                        class="btn-detalle"
                        style="text-decoration: none; display: inline-block; background: #28a745; margin-left: 5px;">Agregar Detalle</a>
                 </td>

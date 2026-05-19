@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Detalle de Ventas - KinalApp</title>
@@ -28,6 +28,7 @@
         <div style="margin-bottom: 20px;">
             <a href="/venta/lista" class="button" style="background: #28a745;">+ Nueva Venta</a>
         </div>
+
         <table>
             <thead>
             <tr>
@@ -49,7 +50,7 @@
                 <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.precio, 1, 2)}"></td>
                 <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.subtotal, 1, 2)}"></td>
                 <td class="acciones">
-                    <a th:href="@{/detalleVenta/editar/{codigo}(codigo=${detalle.codigo_detalle})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/editar/{codigo}(codigo=${detalle.codigo_detalle})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block;">Editar</a>
                 </td>
