@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Productos - KinalApp</title>
@@ -26,7 +26,7 @@
 
     <div class="tabla-container">
         <div style="margin-bottom: 20px;">
-            <a href="/producto/nuevo" class="button" style="background: #28a745;">+ Agregar Producto</a>
+            <a sec:authorize="hasRole('ADMIN')" href="/producto/nuevo" class="button" style="background: #28a745;">+ Agregar Producto</a>
         </div>
 
         <table>
@@ -37,47 +37,41 @@
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th sec:authorize="hasRole('ADMIN')">Acciones</th>
             </tr>
             </thead>
 
             <tbody>
-            <!-- SOLO PRODUCTOS ACTIVOS -->
-            <tr th:each="producto : ${productos.?[estado == 1]}">
-
+            <tr th:each="producto : ${productos}">
                 <td th:text="${producto.codigo_producto}"></td>
                 <td th:text="${producto.nombre_producto}"></td>
                 <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(producto.precio, 1, 2)}"></td>
                 <td th:text="${producto.stock}"></td>
-
                 <td>
-                    <span class="estado-activo">Activo</span>
+                    <span th:if="${producto.estado == 1}" class="estado-activo">Activo</span>
+                    <span th:if="${producto.estado == 0}" class="estado-inactivo">Inactivo</span>
                 </td>
-
-                <td class="acciones">
+                <td sec:authorize="hasRole('ADMIN')" class="acciones">
                     <a th:href="@{/producto/editar/{codigo}(codigo=${producto.codigo_producto})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block;">
                         Editar
                     </a>
-
                     <form th:action="@{/producto/eliminar/{codigo}(codigo=${producto.codigo_producto})}"
                           method="post"
                           style="display: inline;">
                         <button type="submit" class="btn-eliminar"
-                                onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                onclick="return confirm('¿Estás seguro de desactivar este producto?')">
                             Eliminar
                         </button>
                     </form>
                 </td>
             </tr>
-
-            <tr th:if="${productos.?[estado == 1].isEmpty()}">
+            <tr th:if="${productos.isEmpty()}">
                 <td colspan="6" class="vacio">
-                    No hay productos activos registrados
+                    No hay productos registrados
                 </td>
             </tr>
-
             </tbody>
         </table>
     </div>

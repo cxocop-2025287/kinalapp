@@ -35,41 +35,50 @@
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
-            <a href="/cliente/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+            <a sec:authorize="hasAnyRole('ADMIN', 'USER')" href="/cliente/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
                 </div>
                 <div style="padding: 20px;">
                     <h3 style="color: #0c2a41; margin-bottom: 10px;">Clientes</h3>
-                    <p style="color: #666; font-size: 14px;">Gestiona la información de tus clientes, registra nuevos, edita o elimina registros existentes.</p>
+                    <p style="color: #666; font-size: 14px;">Consulta la información de los clientes registrados.</p>
                 </div>
             </a>
-            <a sec:authorize="hasRole('ADMIN')" href="/producto/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+            <a sec:authorize="hasAnyRole('ADMIN', 'USER')" href="/producto/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
                 </div>
                 <div style="padding: 20px;">
                     <h3 style="color: #0c2a41; margin-bottom: 10px;">Productos</h3>
-                    <p style="color: #666; font-size: 14px;">Administra tu catálogo de productos, controla precios, stock y disponibilidad.</p>
+                    <p style="color: #666; font-size: 14px;">Consulta el catálogo de productos, precios y stock.</p>
                 </div>
             </a>
 
-            <a href="/venta/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+            <a sec:authorize="hasAnyRole('ADMIN', 'USER')" href="/venta/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
                 </div>
                 <div style="padding: 20px;">
                     <h3 style="color: #0c2a41; margin-bottom: 10px;">Ventas</h3>
-                    <p style="color: #666; font-size: 14px;">Registra nuevas ventas, consulta el historial y gestiona transacciones.</p>
+                    <p style="color: #666; font-size: 14px;">Registra nuevas ventas y consulta el historial.</p>
                 </div>
             </a>
-            <a href="/detalleVenta" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+            <a sec:authorize="hasAnyRole('ADMIN', 'USER')" href="/detalleVenta" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
                     <span style="font-size: 60px;"></span>
                 </div>
                 <div style="padding: 20px;">
                     <h3 style="color: #0c2a41; margin-bottom: 10px;">Detalle de Ventas</h3>
-                    <p style="color: #666; font-size: 14px;">Consulta el detalle completo de cada venta realizada en el sistema.</p>
+                    <p style="color: #666; font-size: 14px;">Consulta el detalle completo de cada venta.</p>
+                </div>
+            </a>
+            <a sec:authorize="hasRole('ADMIN')" href="/usuarios/lista" style="text-decoration: none; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; display: block; text-align: center; overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #0c2a41 0%, #1a4a6e 100%); padding: 30px 20px 15px;">
+                    <span style="font-size: 60px;"></span>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="color: #0c2a41; margin-bottom: 10px;">Usuarios</h3>
+                    <p style="color: #666; font-size: 14px;">Gestiona los usuarios del sistema, edita roles y estados.</p>
                 </div>
             </a>
         </div>
