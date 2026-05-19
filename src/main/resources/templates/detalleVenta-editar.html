@@ -26,8 +26,7 @@
         <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
         <section>
-            <form th:action="@{/detalleVenta/actualizar/{codigo}(codigo=${detalleVenta.codigo_detalle})}" method="post">
-
+            <form th:action="@{/detalleVenta/actualizar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(detalleVenta.codigo_detalle)})}" method="post">
                 <input type="hidden" name="ventaCodigo" th:value="${detalleVenta.venta.codigo_venta}">
 
                 <div class="form-group">

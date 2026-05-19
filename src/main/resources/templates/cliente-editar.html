@@ -26,7 +26,7 @@
         <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
 
         <section>
-            <form th:action="@{/cliente/actualizar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+            <form th:action="@{/cliente/actualizar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(cliente.dpi_Cliente)})}"
                   th:object="${cliente}"
                   method="post">
 
