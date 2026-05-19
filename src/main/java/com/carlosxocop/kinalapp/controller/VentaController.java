@@ -31,8 +31,13 @@ public class VentaController {
     }
 
     @GetMapping("/lista")
-    public String listarVentas(Model model) {
-        List<Venta> ventas = ventaService.listarTodos();
+    public String listarVentas(Model model, Authentication authentication) {
+        List<Venta> ventas;
+        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            ventas = ventaService.listarTodos();
+        }else {
+            ventas = ventaService.listarVentasPorUsuario(authentication.getName());
+        }
         model.addAttribute("ventas", ventas);
         return "venta-lista";
     }
@@ -70,10 +75,17 @@ public class VentaController {
     }
 
     @GetMapping("/editar/{codigo}")
-    public String formularioEditarVenta(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes) {
+    public String formularioEditarVenta(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(codigo)
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para editar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             model.addAttribute("venta", venta);
             return "venta-editar";
         } catch (Exception e) {
@@ -83,10 +95,18 @@ public class VentaController {
     }
 
     @PostMapping("/actualizar/{codigo}")
-    public String actualizarVenta(@PathVariable Long codigo, @RequestParam String fecha, @RequestParam int estado, @RequestParam BigDecimal total, RedirectAttributes redirectAttributes) {
+    public String actualizarVenta(@PathVariable Long codigo, @RequestParam String fecha, @RequestParam int estado, @RequestParam BigDecimal total, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(codigo)
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para actualizar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             venta.setFecha(LocalDate.parse(fecha));
             venta.setEstado(estado);
             venta.setTotal(total);
@@ -99,8 +119,18 @@ public class VentaController {
     }
 
     @PostMapping("/eliminar/{codigo}")
-    public String eliminarVenta(@PathVariable Long codigo, RedirectAttributes redirectAttributes) {
+    public String eliminarVenta(@PathVariable Long codigo, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             ventaService.eliminar(codigo);
             redirectAttributes.addFlashAttribute("mensaje", "Venta desactivada exitosamente");
         } catch (Exception e) {
