@@ -1,6 +1,5 @@
 package com.carlosxocop.kinalapp.service;
 
-import com.carlosxocop.kinalapp.entity.Cliente;
 import com.carlosxocop.kinalapp.entity.Usuario;
 
 import java.util.List;
@@ -13,6 +12,8 @@ public interface IUsuarioService {
 
     Optional<Usuario> buscarPorCodigo(Long codigo);
 
+    Optional<Usuario> buscarPorUsername(String username);
+
     Usuario actualizar(Long codigo, Usuario usuario);
 
     void eliminar(Long codigo);
@@ -20,5 +21,4 @@ public interface IUsuarioService {
     boolean existePorCodigo(Long codigo);
 
     List<Usuario> listarPorEstado(int estado);
-
 }

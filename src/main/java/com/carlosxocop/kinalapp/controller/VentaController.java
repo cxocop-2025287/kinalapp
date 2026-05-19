@@ -6,6 +6,7 @@ import com.carlosxocop.kinalapp.entity.Venta;
 import com.carlosxocop.kinalapp.repository.UsuarioRepository;
 import com.carlosxocop.kinalapp.service.IClienteService;
 import com.carlosxocop.kinalapp.service.IVentaService;
+import com.carlosxocop.kinalapp.util.JwtIdEncryptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,8 +32,13 @@ public class VentaController {
     }
 
     @GetMapping("/lista")
-    public String listarVentas(Model model) {
-        List<Venta> ventas = ventaService.listarTodos();
+    public String listarVentas(Model model, Authentication authentication) {
+        List<Venta> ventas;
+        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            ventas = ventaService.listarTodos();
+        } else {
+            ventas = ventaService.listarVentasPorUsuario(authentication.getName());
+        }
         model.addAttribute("ventas", ventas);
         return "venta-lista";
     }
@@ -62,31 +68,48 @@ public class VentaController {
 
             Venta nuevaVenta = ventaService.guardar(venta);
             redirectAttributes.addFlashAttribute("mensaje", "Venta creada exitosamente");
-            return "redirect:/detalleVenta/nuevo/" + nuevaVenta.getCodigo_venta();
+            return "redirect:/detalleVenta/nuevo/" + JwtIdEncryptor.encryptId(nuevaVenta.getCodigo_venta());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al crear venta: " + e.getMessage());
             return "redirect:/venta/nuevo";
         }
     }
 
-    @GetMapping("/editar/{codigo}")
-    public String formularioEditarVenta(@PathVariable Long codigo, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/editar/{id}")
+    public String formularioEditarVenta(@PathVariable String id, Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(codigo)
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            Long codigo = JwtIdEncryptor.decryptId(id);
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para editar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             model.addAttribute("venta", venta);
             return "venta-editar";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Venta no encontrada");
+            redirectAttributes.addFlashAttribute("error", "Venta no encontrada o enlace inválido");
             return "redirect:/venta/lista";
         }
     }
 
-    @PostMapping("/actualizar/{codigo}")
-    public String actualizarVenta(@PathVariable Long codigo, @RequestParam String fecha, @RequestParam int estado, @RequestParam BigDecimal total, RedirectAttributes redirectAttributes) {
+    @PostMapping("/actualizar/{id}")
+    public String actualizarVenta(@PathVariable String id, @RequestParam String fecha, @RequestParam int estado, @RequestParam BigDecimal total, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
-            Venta venta = ventaService.buscarPorCodigo(codigo)
-                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            Long codigo = JwtIdEncryptor.decryptId(id);
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para actualizar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             venta.setFecha(LocalDate.parse(fecha));
             venta.setEstado(estado);
             venta.setTotal(total);
@@ -98,9 +121,20 @@ public class VentaController {
         return "redirect:/venta/lista";
     }
 
-    @PostMapping("/eliminar/{codigo}")
-    public String eliminarVenta(@PathVariable Long codigo, RedirectAttributes redirectAttributes) {
+    @PostMapping("/eliminar/{id}")
+    public String eliminarVenta(@PathVariable String id, RedirectAttributes redirectAttributes, Authentication authentication) {
         try {
+            Long codigo = JwtIdEncryptor.decryptId(id);
+            Venta venta = ventaService.buscarPorCodigo(codigo).orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+
+            boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            boolean isOwner = venta.getUsuario().getUsername().equals(authentication.getName());
+
+            if (!isAdmin && !isOwner) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar esta venta");
+                return "redirect:/venta/lista";
+            }
+
             ventaService.eliminar(codigo);
             redirectAttributes.addFlashAttribute("mensaje", "Venta desactivada exitosamente");
         } catch (Exception e) {

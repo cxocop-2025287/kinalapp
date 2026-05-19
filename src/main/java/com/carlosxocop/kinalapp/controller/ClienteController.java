@@ -2,6 +2,7 @@ package com.carlosxocop.kinalapp.controller;
 
 import com.carlosxocop.kinalapp.entity.Cliente;
 import com.carlosxocop.kinalapp.service.IClienteService;
+import com.carlosxocop.kinalapp.util.JwtIdEncryptor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,21 +37,23 @@ public class ClienteController {
         return "redirect:/cliente/lista";
     }
 
-    @GetMapping("/editar/{dpi}")
-    public String formularioEditarCliente(@PathVariable Long dpi, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/editar/{id}")
+    public String formularioEditarCliente(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         try {
+            Long dpi = JwtIdEncryptor.decryptId(id);
             Cliente cliente = clienteService.buscarPorDPI(dpi).orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
             model.addAttribute("cliente", cliente);
             return "cliente-editar";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cliente no encontrado");
+            redirectAttributes.addFlashAttribute("error", "Cliente no encontrado o enlace inválido");
             return "redirect:/cliente/lista";
         }
     }
 
-    @PostMapping("/actualizar/{dpi}")
-    public String actualizarCliente(@PathVariable Long dpi, @ModelAttribute Cliente cliente, RedirectAttributes redirectAttributes) {
+    @PostMapping("/actualizar/{id}")
+    public String actualizarCliente(@PathVariable String id, @ModelAttribute Cliente cliente, RedirectAttributes redirectAttributes) {
         try {
+            Long dpi = JwtIdEncryptor.decryptId(id);
             clienteService.actualizar(dpi, cliente);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente actualizado exitosamente");
         } catch (Exception e) {
@@ -59,9 +62,10 @@ public class ClienteController {
         return "redirect:/cliente/lista";
     }
 
-    @PostMapping("/eliminar/{dpi}")
-    public String eliminarCliente(@PathVariable Long dpi, RedirectAttributes redirectAttributes) {
+    @PostMapping("/eliminar/{id}")
+    public String eliminarCliente(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
+            Long dpi = JwtIdEncryptor.decryptId(id);
             clienteService.eliminar(dpi);
             redirectAttributes.addFlashAttribute("mensaje", "Cliente desactivado exitosamente");
         } catch (Exception e) {

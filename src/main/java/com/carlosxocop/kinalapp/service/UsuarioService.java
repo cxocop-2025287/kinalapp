@@ -40,20 +40,24 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Usuario> buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
+
+    @Override
     public Usuario actualizar(Long codigo, Usuario usuario) {
         if (!usuarioRepository.existsById(codigo)) {
             throw new RuntimeException("Usuario no encontrado con codigo " + codigo);
         }
         usuario.setCodigo_usuario(codigo);
         validarUsuario(usuario);
-
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public void eliminar(Long codigo) {
-        Usuario usuario = usuarioRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun usuario con el codigo:  " + codigo));
-
+        Usuario usuario = usuarioRepository.findById(codigo).orElseThrow(() -> new IllegalArgumentException("No existe ningun usuario con el codigo: " + codigo));
         usuario.setEstado(0);
         usuarioRepository.save(usuario);
     }
@@ -71,12 +75,11 @@ public class UsuarioService implements IUsuarioService {
     }
 
     private void validarUsuario(Usuario usuario) {
-
         if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del usuario es obligtorio.");
+            throw new IllegalArgumentException("El nombre del usuario es obligatorio.");
         }
         if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña del usuario es obligtorio.");
+            throw new IllegalArgumentException("La contraseña del usuario es obligatoria.");
         }
         if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("El email del usuario es obligatorio.");
@@ -84,6 +87,5 @@ public class UsuarioService implements IUsuarioService {
         if (usuario.getRol() == null || usuario.getRol().trim().isEmpty()) {
             throw new IllegalArgumentException("El rol del usuario es obligatorio.");
         }
-
     }
 }

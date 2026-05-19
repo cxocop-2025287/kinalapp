@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -98,6 +99,13 @@ public class DetalleVentaService implements IDetalleVentaService{
         }
 
         ventaRepository.actualizarTotal(codigo_venta, BigDecimal.valueOf(total));
+    }
+
+    @Transactional(readOnly = true)
+    public List<DetalleVenta> listarDetallesPorUsuario(String username) {
+        return detalleVentaRepository.findAll().stream()
+                .filter(d -> d.getVenta().getUsuario().getUsername().equals(username))
+                .collect(Collectors.toList());
     }
 
     @Override

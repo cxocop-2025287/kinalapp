@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Clientes - KinalApp</title>
@@ -26,7 +26,7 @@
 
     <div class="tabla-container">
         <div>
-            <a href="/cliente/nuevo" class="button">+ Agregar Cliente</a>
+            <a sec:authorize="hasRole('ADMIN')" href="/cliente/nuevo" class="button">+ Agregar Cliente</a>
         </div>
 
         <table>
@@ -37,30 +37,27 @@
                 <th>Apellido</th>
                 <th>Dirección</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th sec:authorize="hasRole('ADMIN')">Acciones</th>
             </tr>
             </thead>
 
             <tbody>
-            <tr th:each="cliente : ${clientes.?[estado == 1]}">
-
+            <tr th:each="cliente : ${clientes}">
                 <td th:text="${cliente.dpi_Cliente}"></td>
                 <td th:text="${cliente.nombreCliente}"></td>
                 <td th:text="${cliente.apellidoCliente}"></td>
                 <td th:text="${cliente.direccionCliente}"></td>
-
                 <td>
-                    <span class="estado-activo">Activo</span>
+                    <span th:if="${cliente.estado == 1}" class="estado-activo">Activo</span>
+                    <span th:if="${cliente.estado == 0}" class="estado-inactivo">Inactivo</span>
                 </td>
-
-                <td class="acciones">
-                    <a th:href="@{/cliente/editar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                <td sec:authorize="hasRole('ADMIN')" class="acciones">
+                    <a th:href="@{/cliente/editar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(cliente.dpi_Cliente)})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block;">
                         Editar
                     </a>
-
-                    <form th:action="@{/cliente/eliminar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                    <form th:action="@{/cliente/eliminar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(cliente.dpi_Cliente)})}"
                           method="post"
                           style="display: inline;">
                         <button type="submit" class="btn-eliminar"
@@ -70,12 +67,11 @@
                     </form>
                 </td>
             </tr>
-            <tr th:if="${clientes.?[estado == 1].isEmpty()}">
+            <tr th:if="${clientes.isEmpty()}">
                 <td colspan="6" class="vacio">
-                    No hay clientes activos registrados
+                    No hay clientes registrados
                 </td>
             </tr>
-
             </tbody>
         </table>
     </div>
