@@ -50,7 +50,7 @@
                 <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.precio, 1, 2)}"></td>
                 <td class="precio" th:text="'Q' + ${#numbers.formatDecimal(detalle.subtotal, 1, 2)}"></td>
                 <td class="acciones">
-                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/editar/{codigo}(codigo=${detalle.codigo_detalle})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/editar/{codigo}(codigo=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(detalle.codigo_detalle)})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block;">Editar</a>
                 </td>

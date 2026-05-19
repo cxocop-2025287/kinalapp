@@ -53,7 +53,7 @@
                         <span th:if="${usuario.estado == 0}" class="estado-inactivo">Inactivo</span>
                     </td>
                     <td class="acciones">
-                        <form th:action="@{/usuarios/eliminar/{codigo}(codigo=${usuario.codigo_usuario})}"
+                        <form th:action="@{/usuarios/eliminar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(usuario.codigo_usuario)})}"
                               method="post"
                               style="display: inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

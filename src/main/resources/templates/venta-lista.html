@@ -52,10 +52,10 @@
                     <span th:if="${venta.estado == 0}" class="estado-inactivo">Inactivo</span>
                 </td>
                 <td class="acciones">
-                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/venta/editar/{codigo}(codigo=${venta.codigo_venta})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/venta/editar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(venta.codigo_venta)})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block; background: #2196F3;">Editar</a>
-                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/nuevo/{codigoVenta}(codigoVenta=${venta.codigo_venta})}"
+                    <a sec:authorize="hasAnyRole('ADMIN', 'USER')" th:href="@{/detalleVenta/nuevo/{codigoVenta}(codigoVenta=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(venta.codigo_venta)})}"
                        class="btn-detalle"
                        style="text-decoration: none; display: inline-block; background: #28a745; margin-left: 5px;">Agregar Detalle</a>
                 </td>

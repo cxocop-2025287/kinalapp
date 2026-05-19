@@ -52,12 +52,12 @@
                     <span th:if="${cliente.estado == 0}" class="estado-inactivo">Inactivo</span>
                 </td>
                 <td sec:authorize="hasRole('ADMIN')" class="acciones">
-                    <a th:href="@{/cliente/editar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                    <a th:href="@{/cliente/editar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(cliente.dpi_Cliente)})}"
                        class="btn-editar"
                        style="text-decoration: none; display: inline-block;">
                         Editar
                     </a>
-                    <form th:action="@{/cliente/eliminar/{dpi}(dpi=${cliente.dpi_Cliente})}"
+                    <form th:action="@{/cliente/eliminar/{id}(id=${new com.carlosxocop.kinalapp.util.JwtIdEncryptor().encryptId(cliente.dpi_Cliente)})}"
                           method="post"
                           style="display: inline;">
                         <button type="submit" class="btn-eliminar"
