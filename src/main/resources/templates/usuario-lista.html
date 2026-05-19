@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Usuarios - KinalApp</title>
+    <link rel="icon" type="image/png" href="/images/logoapp.png">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div sec:authorize="hasRole('ADMIN')">
+    <main class="main-large">
+        <header>
+            <div class="header-logo">
+                <img src="/images/logoapp.png" alt="KinalApp Logo" class="logo-img">
+                <div class="header-content">
+                    <h1>Lista de Usuarios</h1>
+                    <p>Gestión de usuarios del sistema</p>
+                </div>
+            </div>
+            <nav>
+                <a href="/inicio" class="button">← Volver al Inicio</a>
+            </nav>
+        </header>
+
+        <div th:if="${mensaje}" class="mensaje-exito" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="mensaje-error" th:text="${error}"></div>
+
+        <div class="tabla-container">
+            <div style="margin-bottom: 20px;">
+                <a href="/usuarios/nuevo" class="button" style="background: #28a745;">+ Agregar Usuario</a>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.codigo_usuario}"></td>
+                    <td th:text="${usuario.username}"></td>
+                    <td th:text="${usuario.email}"></td>
+                    <td th:text="${usuario.rol}"></td>
+                    <td>
+                        <span th:if="${usuario.estado == 1}" class="estado-activo">Activo</span>
+                        <span th:if="${usuario.estado == 0}" class="estado-inactivo">Inactivo</span>
+                    </td>
+                    <td class="acciones">
+                        <form th:action="@{/usuarios/eliminar/{codigo}(codigo=${usuario.codigo_usuario})}"
+                              method="post"
+                              style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-eliminar"
+                                    onclick="return confirm('¿Estás seguro de desactivar este usuario?')">
+                                Desactivar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${usuarios.isEmpty()}">
+                    <td colspan="6" class="vacio">
+                        No hay usuarios registrados
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <img src="/images/logoapp.png" alt="KinalApp" class="footer-logo">
+            <p>KinalApp - Sistema de Gestión de Ventas © 2024</p>
+            <p style="font-size: 11px; margin-top: 5px;">Versión 1.0 | Todos los derechos reservados</p>
+        </footer>
+    </main>
+</div>
+<div sec:authorize="!hasRole('ADMIN')">
+    <main class="main-small">
+        <header>
+            <h1>Acceso Denegado</h1>
+            <p>No tienes permisos para ver esta página</p>
+        </header>
+        <nav style="text-align: center; padding: 20px;">
+            <a href="/inicio" class="button">Volver al Inicio</a>
+        </nav>
+    </main>
+</div>
+</body>
+</html>
